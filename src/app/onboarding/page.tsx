@@ -20,7 +20,6 @@ const QUESTIONS = [
 export default function OnboardingScreen() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [ampm, setAmpm] = useState<Record<string, string>>({ "3-wd-am": "AM", "3-wd-pm": "AM", "3-we-am": "AM", "3-we-pm": "AM", "4-wd-am": "PM", "4-wd-pm": "PM", "4-we-am": "PM", "4-we-pm": "PM" });
   const [fadeIn, setFadeIn] = useState(true);
 
   const currentQ = QUESTIONS[step];
@@ -125,23 +124,11 @@ export default function OnboardingScreen() {
                   <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-neon mb-2 block">
                     {currentQ.label}
                   </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="time"
-                      onChange={(e) => handleSelect(`wd:${e.target.value}`)}
-                      className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
-                    />
-                    <button
-                      onClick={() => setAmpm({ ...ampm, [`${currentQ.id}-wd-am`]: ampm[`${currentQ.id}-wd-am`] === "AM" ? "PM" : "AM" })}
-                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                        ampm[`${currentQ.id}-wd-am`] === "AM"
-                          ? "bg-neon/15 border border-neon text-neon"
-                          : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06]"
-                      }`}
-                    >
-                      {ampm[`${currentQ.id}-wd-am`]}
-                    </button>
-                  </div>
+                  <input
+                    type="time"
+                    onChange={(e) => handleSelect(`wd:${e.target.value}`)}
+                    className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
+                  />
                 </div>
 
                 {/* Weekends & Holidays */}
@@ -149,23 +136,11 @@ export default function OnboardingScreen() {
                   <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted mb-2 block">
                     {currentQ.label2}
                   </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="time"
-                      onChange={(e) => handleSelect(`we:${e.target.value}`)}
-                      className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
-                    />
-                    <button
-                      onClick={() => setAmpm({ ...ampm, [`${currentQ.id}-we-am`]: ampm[`${currentQ.id}-we-am`] === "AM" ? "PM" : "AM" })}
-                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                        ampm[`${currentQ.id}-we-am`] === "AM"
-                          ? "bg-neon/15 border border-neon text-neon"
-                          : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06]"
-                      }`}
-                    >
-                      {ampm[`${currentQ.id}-we-am`]}
-                    </button>
-                  </div>
+                  <input
+                    type="time"
+                    onChange={(e) => handleSelect(`we:${e.target.value}`)}
+                    className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
+                  />
                 </div>
               </div>
             )}
