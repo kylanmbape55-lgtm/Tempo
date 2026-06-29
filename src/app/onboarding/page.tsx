@@ -376,12 +376,18 @@ export default function OnboardingScreen() {
             <button
               onClick={handleNext}
               disabled={
-                (!answers[currentQ.id] && !(currentQ.type === "multi" && isMultiAnswered()) && !(currentQ.type === "ranking" && ((answers[6] as string[])?.length))) ||
-                (currentQ.type === "name-email" && (!nameEmail.name.trim() || !nameEmail.email.trim()))
+                (currentQ.type === "name-email")
+                  ? (!nameEmail.name.trim() || !nameEmail.email.trim())
+                  : (!answers[currentQ.id] &&
+                      !(currentQ.type === "multi" && isMultiAnswered()) &&
+                      !(currentQ.type === "ranking" && ((answers[6] as string[])?.length)))
               }
               className={`btn-primary px-8 py-4 rounded-full text-sm font-extrabold tracking-wide transition-all ${
-                ((!answers[currentQ.id] && !(currentQ.type === "multi" && isMultiAnswered()) && !(currentQ.type === "ranking" && ((answers[6] as string[])?.length))) ||
-                (currentQ.type === "name-email" && (!nameEmail.name.trim() || !nameEmail.email.trim())))
+                (currentQ.type === "name-email")
+                  ? (!nameEmail.name.trim() || !nameEmail.email.trim())
+                  : (!answers[currentQ.id] &&
+                      !(currentQ.type === "multi" && isMultiAnswered()) &&
+                      !(currentQ.type === "ranking" && ((answers[6] as string[])?.length)))
                   ? "opacity-40 cursor-not-allowed"
                   : ""
               }`}
