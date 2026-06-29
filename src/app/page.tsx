@@ -153,7 +153,7 @@ export default function HomePage() {
           {/* CTA Buttons — PlayerAlbum pill style */}
           <div className="slide-up slide-up-delay-4 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="#get-started"
+              href="/onboarding"
               className="btn-primary px-8 py-4 rounded-full text-base font-extrabold tracking-wide"
             >
               PLAN MY DAY →
@@ -467,7 +467,7 @@ export default function HomePage() {
           {/* CTA under All Stars */}
           <div className="text-center mt-12">
             <p className="text-sm text-muted mb-4">Want to be featured? Use Tempo for 7 days and share your story.</p>
-            <a href="#get-started" className="text-sm font-bold text-neon hover:text-emerald transition-colors">
+            <a href="/onboarding" className="text-sm font-bold text-neon hover:text-emerald transition-colors">
               Apply to be featured →
             </a>
           </div>
@@ -495,16 +495,10 @@ export default function HomePage() {
             One AI coach. One daily plan. Zero stress.
           </p>
 
-          {/* Email signup placeholder */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="w-full sm:flex-1 px-5 py-4 rounded-full bg-white/5 border border-white/10 text-white text-sm placeholder:text-muted focus:outline-none focus:border-neon/50 transition-colors"
-            />
-            <button className="w-full sm:w-auto btn-primary px-8 py-4 rounded-full text-sm font-extrabold whitespace-nowrap">
-              Get Early Access
-            </button>
+          <div className="mt-10">
+            <a href="/onboarding" className="btn-primary px-10 py-5 rounded-full text-base font-extrabold tracking-wide inline-block">
+              Get Started Free →
+            </a>
           </div>
           <p className="mt-4 text-[10px] text-faded">
             Free for students. No credit card. No spam. Just better days.
