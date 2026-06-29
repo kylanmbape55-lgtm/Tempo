@@ -40,15 +40,15 @@ export default function Navbar() {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-4">
-          <a href="#get-started" className="text-sm font-medium text-muted hover:text-white transition-colors">
+          <Link href="/onboarding" className="text-sm font-medium text-muted hover:text-white transition-colors">
             Sign In
-          </a>
-          <a
-            href="#get-started"
+          </Link>
+          <Link
+            href="/onboarding"
             className="btn-primary px-5 py-2.5 rounded-full text-sm"
           >
             Get Started
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Toggle */}
@@ -75,9 +75,9 @@ export default function Navbar() {
               </a>
             ))}
             <div className="pt-3 mt-3 border-t border-white/5">
-              <a href="#get-started" className="block w-full text-center px-4 py-3 text-sm font-bold rounded-lg btn-primary">
+              <Link href="/onboarding" className="block w-full text-center px-4 py-3 text-sm font-bold rounded-lg btn-primary">
                 Get Started
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -14,6 +14,7 @@ const QUESTIONS = [
   { id: 4, question: "What time do you go to sleep?", type: "dual-time", label: "Weekdays", label2: "Weekends & Holidays" },
   { id: 5, question: "When is practice?", type: "multi", days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
   { id: 6, question: "What are your hardest subjects? Pick your top 3.", type: "ranking", options: ["Math", "Science", "English", "History", "Foreign Language", "Art", "PE"] },
+  { id: 7, question: "What's your name & email?", type: "name-email" },
 ];
 
 const RANK_COLORS = [
@@ -69,6 +70,7 @@ export default function OnboardingScreen() {
   const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
   const [fadeIn, setFadeIn] = useState(true);
   const [practiceSlots, setPracticeSlots] = useState<{ days: string[]; time: string }[]>([{ days: [], time: "" }]);
+  const [nameEmail, setNameEmail] = useState<{ name: string; email: string }>({ name: "", email: "" });
 
   const currentQ = QUESTIONS[step];
   const progress = ((step + 1) / QUESTIONS.length) * 100;
@@ -78,6 +80,22 @@ export default function OnboardingScreen() {
     setTimeout(() => {
       if (step < QUESTIONS.length - 1) {
         setStep(step + 1);
+      } else {
+        // Save profile & redirect to check-in
+        const profile = {
+          sport: answers[1],
+          grade: answers[2],
+          wakeTime: answers[3],
+          sleepTime: answers[4],
+          practice: practiceSlots,
+          hardSubjects: answers[6] || [],
+          name: nameEmail.name || "",
+          email: nameEmail.email || "",
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem("tempo_profile", JSON.stringify(profile));
+        window.location.href = "/check-in";
       }
       setFadeIn(true);
     }, 300);
@@ -315,6 +333,33 @@ export default function OnboardingScreen() {
               </div>
             )}
 
+            {currentQ.type === "name-email" && (
+              <div className="max-w-sm space-y-4">
+                <div>
+                  <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-neon mb-2 block">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Alex"
+                    onChange={(e) => setNameEmail({ ...nameEmail, name: e.target.value })}
+                    className="w-full px-5 py-4 rounded-xl bg-white/[0.03] border border-white/10 text-white font-bold placeholder:text-muted focus:outline-none focus:border-neon/50 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-neon mb-2 block">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="you@email.com"
+                    onChange={(e) => setNameEmail({ ...nameEmail, email: e.target.value })}
+                    className="w-full px-5 py-4 rounded-xl bg-white/[0.03] border border-white/10 text-white font-bold placeholder:text-muted focus:outline-none focus:border-neon/50 transition-colors"
+                  />
+                </div>
+              </div>
+            )}
+
             {currentQ.type === "text" && (
               <div className="max-w-lg">
                 <input
@@ -331,14 +376,12 @@ export default function OnboardingScreen() {
             <button
               onClick={handleNext}
               disabled={
-                !answers[currentQ.id] &&
-                !(currentQ.type === "multi" && isMultiAnswered()) &&
-                !(currentQ.type === "ranking" && (answers[6] as string[])?.length)
+                (!answers[currentQ.id] && !(currentQ.type === "multi" && isMultiAnswered()) && !(currentQ.type === "ranking" && ((answers[6] as string[])?.length))) ||
+                (currentQ.type === "name-email" && (!nameEmail.name || !nameEmail.email))
               }
               className={`btn-primary px-8 py-4 rounded-full text-sm font-extrabold tracking-wide transition-all ${
-                (!answers[currentQ.id] &&
-                  !(currentQ.type === "multi" && isMultiAnswered()) &&
-                  !(currentQ.type === "ranking" && (answers[6] as string[])?.length))
+                ((!answers[currentQ.id] && !(currentQ.type === "multi" && isMultiAnswered()) && !(currentQ.type === "ranking" && ((answers[6] as string[])?.length))) ||
+                (currentQ.type === "name-email" && (!nameEmail.name || !nameEmail.email)))
                   ? "opacity-40 cursor-not-allowed"
                   : ""
               }`}
@@ -652,6 +695,7 @@ export default function OnboardingScreen() {
               {step === 3 && "Sleep is non-negotiable. We protect it."}
               {step === 4 && "Practice is fixed. Everything else flexes around it."}
               {step === 5 && "We'll prioritize your hardest subjects when your mind is fresh."}
+              {step === 6 && "Almost done. What should we call you?"}
             </p>
           </div>
         </div>
