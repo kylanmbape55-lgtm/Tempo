@@ -119,7 +119,7 @@ export default function CheckInScreen() {
             {greeting}, {profile.name}
           </h1>
           <p className="mt-4 text-base text-muted leading-relaxed">
-            Tell Coach Vega about today. We&apos;ll build your minute-by-minute plan.
+            Tell Apex about today. We&apos;ll build your minute-by-minute plan.
           </p>
 
           {/* Text area */}
@@ -195,7 +195,7 @@ export default function CheckInScreen() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          RIGHT — Coach Vega
+          RIGHT — Apex
           ═══════════════════════════════════════════════════════════ */}
       <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
         {/* Radial glow */}
@@ -328,7 +328,7 @@ export default function CheckInScreen() {
           </div>
 
           <div className="mt-4 text-center">
-            <h3 className="text-xl font-black text-white tracking-tight">COACH VEGA</h3>
+            <h3 className="text-xl font-black text-white tracking-tight">APEX</h3>
             <p className="mt-1 text-xs font-bold tracking-[0.2em] uppercase text-neon">Your Cosmic Guide</p>
           </div>
 

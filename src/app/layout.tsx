@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Tempo — Your AI Coach for Student Athletes",
+  title: "Tempo — Apex, Your AI Coach for Student Athletes",
   description: "Plan your day in 15 minutes. AI-powered daily planner built for student athletes. Balance practice, homework, meals, and sleep.",
 };
 

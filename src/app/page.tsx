@@ -82,7 +82,7 @@ export default function HomePage() {
           <div className="scroll-text-down">
             {[...Array(3)].map((_, setIdx) => (
               <div key={setIdx} className="flex flex-col items-center gap-8">
-                {["AI POWERED", "15 MIN", "FREE", "24/7", "AI COACH", "STUDENTS"].map((text, i) => (
+                {["AI POWERED", "15 MIN", "FREE", "24/7", "APEX AI", "STUDENTS"].map((text, i) => (
                   <span
                     key={`${setIdx}-${i}`}
                     className="text-[10px] font-bold tracking-[0.2em] uppercase whitespace-nowrap"

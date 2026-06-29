@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 /* ═══════════════════════════════════════════════════════════════════
    TEMPO — Onboarding Screen
-   Split layout: questions on left, Coach Vega preview on right
+   Split layout: questions on left, Apex preview on right
    ═══════════════════════════════════════════════════════════════════ */
 
 const QUESTIONS = [
@@ -412,10 +412,10 @@ export default function OnboardingScreen() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          RIGHT SIDE — Coach Vega (Messianic Figure)
+          RIGHT SIDE — Apex (Messianic Figure)
           ═══════════════════════════════════════════════════════════ */}
       <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
-        {/* Radial glow behind coach */}
+        {/* Radial glow behind Apex */}
         <div className="absolute inset-0">
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.08]"
@@ -427,7 +427,7 @@ export default function OnboardingScreen() {
           />
         </div>
 
-        {/* Coach Vega — Cosmic Fear Garou inspired messianic figure */}
+        {/* Apex — Cosmic Fear Garou inspired messianic figure */}
         <div className="relative z-10 flex flex-col items-center">
           {/* Radial cosmic aura */}
           <div className="relative">
@@ -686,9 +686,9 @@ export default function OnboardingScreen() {
             </svg>
           </div>
 
-          {/* Coach name */}
+          {/* Apex name */}
           <div className="mt-4 text-center">
-            <h3 className="text-xl font-black text-white tracking-tight">COACH VEGA</h3>
+            <h3 className="text-xl font-black text-white tracking-tight">APEX</h3>
             <p className="mt-1 text-xs font-bold tracking-[0.2em] uppercase text-neon">Your Cosmic Guide</p>
           </div>
 
