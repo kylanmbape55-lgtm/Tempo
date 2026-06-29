@@ -125,7 +125,7 @@ export default function CheckInScreen() {
               onChange={(e) => setText(e.target.value)}
               placeholder="e.g., I've got a math test 3rd period, feeling a bit tired, and practice at 4pm..."
               rows={4}
-              className="w-full px-5 py-4 rounded-xl bg-white/[0.03] border border-white/10 text-white font-medium placeholder:text-muted/60 focus:outline-none focus:border-neon/50 transition-colors resize-none leading-relaxed"
+              className="w-full px-5 py-4 rounded-xl bg-white/[0.03] border border-white/10 text-white font-medium placeholder:text-white/40 focus:outline-none focus:border-neon/50 transition-colors resize-none leading-relaxed"
             />
           </div>
 
@@ -194,11 +194,7 @@ export default function CheckInScreen() {
               className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full opacity-25"
               style={{ background: "radial-gradient(circle, #FFB800 0%, #39FF14 50%, transparent 70%)", filter: "blur(20px)" }}
             />
-
-            {/* Coach Vega SVG (reused from onboarding) */}
             <svg width="300" height="420" viewBox="0 0 300 420" fill="none" className="relative z-10 float" style={{ filter: "drop-shadow(0 0 30px rgba(57,255,20,0.2)) drop-shadow(0 0 60px rgba(6,182,212,0.15))" }}>
-              <ellipse cx="150" cy="210" rx="120" ry="180" fill="none" stroke="url(#auraGradient)" strokeWidth="1" opacity="0.3" />
-              <ellipse cx="150" cy="210" rx="100" ry="155" fill="none" stroke="#39FF14" strokeWidth="0.5" opacity="0.15" />
               <defs>
                 <radialGradient id="voidGradient" cx="0.5" cy="0.4" r="0.6">
                   <stop offset="0%" stopColor="#0a0a0c" />
@@ -227,6 +223,8 @@ export default function CheckInScreen() {
                   <stop offset="100%" stopColor="#FFB800" stopOpacity="0" />
                 </radialGradient>
               </defs>
+              <ellipse cx="150" cy="210" rx="120" ry="180" fill="none" stroke="url(#auraGradient)" strokeWidth="1" opacity="0.3" />
+              <ellipse cx="150" cy="210" rx="100" ry="155" fill="none" stroke="#39FF14" strokeWidth="0.5" opacity="0.15" />
               <path d="M110 165 Q150 150 190 165 L200 280 Q150 310 100 280 Z" fill="url(#voidGradient)" />
               <ellipse cx="130" cy="200" rx="25" ry="35" fill="url(#galaxy1)" />
               <ellipse cx="170" cy="220" rx="20" ry="30" fill="url(#galaxy2)" />
@@ -306,12 +304,6 @@ export default function CheckInScreen() {
           <div className="mt-4 text-center">
             <h3 className="text-xl font-black text-white tracking-tight">COACH VEGA</h3>
             <p className="mt-1 text-xs font-bold tracking-[0.2em] uppercase text-neon">Your Cosmic Guide</p>
-          </div>
-
-          <div className="mt-4 max-w-xs text-center">
-            <p className="text-sm text-muted leading-relaxed">
-              Tell me about your day — tests, practice, how you&apos;re feeling. I&apos;ll build the perfect plan.
-            </p>
           </div>
         </div>
 
