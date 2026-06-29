@@ -19,7 +19,7 @@ module.exports = {
         danger: "#E63946",
         white: "#FFFFFF",
         gray: "#B0B3B8",
-        muted: "#6B7280",
+        muted: "#9CA3AF",
       },
       fontFamily: {
         display: ["var(--font-inter)", "system-ui", "sans-serif"],

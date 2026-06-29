@@ -82,7 +82,7 @@ export default function HomePage() {
           <div className="scroll-text-down">
             {[...Array(3)].map((_, setIdx) => (
               <div key={setIdx} className="flex flex-col items-center gap-8">
-                {["AI POWERED", "15 MIN", "FREE", "24/7", "COACH VERA", "STUDENTS"].map((text, i) => (
+                {["AI POWERED", "15 MIN", "FREE", "24/7", "AI COACH", "STUDENTS"].map((text, i) => (
                   <span
                     key={`${setIdx}-${i}`}
                     className="text-[10px] font-bold tracking-[0.2em] uppercase whitespace-nowrap"
@@ -141,11 +141,11 @@ export default function HomePage() {
 
           {/* Subtitle */}
           <p className="slide-up slide-up-delay-2 mt-4 text-lg sm:text-xl font-bold tracking-[0.15em] uppercase text-gray" style={{ position: "relative", zIndex: 2 }}>
-            Your AI Coach for Student Athletes
+            The AI Coach for Student Athletes
           </p>
 
           {/* Description */}
-          <p className="slide-up slide-up-delay-3 mt-6 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed" style={{ position: "relative", zIndex: 2 }}>
+          <p className="slide-up slide-up-delay-3 mt-6 text-base sm:text-lg text-muted font-medium max-w-2xl mx-auto leading-relaxed" style={{ position: "relative", zIndex: 2 }}>
             Plan your day in 15 minutes. Balance practice, homework, meals, and sleep —
             with an AI coach that understands what it means to be a student athlete.
           </p>
@@ -210,7 +210,7 @@ export default function HomePage() {
               {
                 icon: "🧠",
                 title: "AI Daily Planner",
-                desc: "Tell Coach Vega what's on your plate. Get a minute-by-minute plan that fits your practice, homework, and sleep schedule.",
+                desc: "Tell Tempo what's on your plate. Get a minute-by-minute plan that fits your practice, homework, and sleep schedule.",
                 accent: "neon",
               },
               {
@@ -257,7 +257,7 @@ export default function HomePage() {
                   {feature.icon}
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted leading-relaxed">{feature.desc}</p>
+                <p className="text-sm text-muted font-medium leading-relaxed">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -297,7 +297,7 @@ export default function HomePage() {
               {
                 step: "02",
                 title: "Morning Check-In",
-                desc: "Every day, tell Coach Vega what's on your plate. Homework, tests, how you're feeling. Takes 30 seconds.",
+                desc: "Every day, tell Tempo what's on your plate. Homework, tests, how you're feeling. Takes 30 seconds.",
                 icon: "💬",
               },
               {
@@ -319,7 +319,7 @@ export default function HomePage() {
                     <span className="text-[10px] font-black tracking-wider text-amber uppercase">Step {item.step}</span>
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted leading-relaxed">{item.desc}</p>
+                  <p className="text-sm text-muted font-medium leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -338,7 +338,7 @@ export default function HomePage() {
               Real athletes.<br />
               <span className="text-gradient-neon">Real results.</span>
             </h2>
-            <p className="mt-4 text-muted max-w-lg mx-auto">
+            <p className="mt-4 text-muted font-medium max-w-lg mx-auto">
               Student athletes who use Tempo to balance their grind. Featured here with their permission.
             </p>
           </div>

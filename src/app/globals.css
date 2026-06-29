@@ -15,8 +15,8 @@
   --danger: #E63946;
   --text-primary: #FFFFFF;
   --text-secondary: #B0B3B8;
-  --text-muted: #6B7280;
-  --text-faded: rgba(107, 114, 128, 0.6);
+  --text-muted: #9CA3AF;
+  --text-faded: rgba(156, 163, 175, 0.6);
 }
 
 * { box-sizing: border-box; }
