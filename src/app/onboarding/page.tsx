@@ -10,8 +10,8 @@ import { useState, useEffect } from "react";
 const QUESTIONS = [
   { id: 1, question: "What sport do you play?", type: "select", options: ["Football", "Basketball", "Swimming", "Track & Field", "Tennis", "Baseball", "Soccer", "Other"] },
   { id: 2, question: "What grade are you in?", type: "select", options: ["6th Grade", "7th Grade", "8th Grade", "9th Grade", "10th Grade", "11th Grade", "12th Grade"] },
-  { id: 3, question: "What time do you wake up?", type: "time" },
-  { id: 4, question: "What time do you go to sleep?", type: "time" },
+  { id: 3, question: "What time do you wake up on weekdays?", type: "dual-time", label: "Weekdays", label2: "Weekends & Holidays" },
+  { id: 4, question: "What time do you go to sleep?", type: "dual-time", label: "Weekdays", label2: "Weekends & Holidays" },
   { id: 5, question: "When is practice?", type: "multi", days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
   { id: 6, question: "What's your hardest subject?", type: "select", options: ["Math", "Science", "English", "History", "Foreign Language", "Art", "PE"] },
   { id: 7, question: "Any games coming up?", type: "text", placeholder: "e.g., Saturday vs. Lincoln High" },
@@ -20,6 +20,7 @@ const QUESTIONS = [
 export default function OnboardingScreen() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [ampm, setAmpm] = useState<Record<string, string>>({ "3-wd-am": "AM", "3-wd-pm": "AM", "3-we-am": "AM", "3-we-pm": "AM", "4-wd-am": "PM", "4-wd-pm": "PM", "4-we-am": "PM", "4-we-pm": "PM" });
   const [fadeIn, setFadeIn] = useState(true);
 
   const currentQ = QUESTIONS[step];
@@ -114,6 +115,58 @@ export default function OnboardingScreen() {
                     {option}
                   </button>
                 ))}
+              </div>
+            )}
+
+            {currentQ.type === "dual-time" && (
+              <div className="max-w-sm space-y-5">
+                {/* Weekdays */}
+                <div>
+                  <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-neon mb-2 block">
+                    {currentQ.label}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      onChange={(e) => handleSelect(`wd:${e.target.value}`)}
+                      className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
+                    />
+                    <button
+                      onClick={() => setAmpm({ ...ampm, [`${currentQ.id}-wd-am`]: ampm[`${currentQ.id}-wd-am`] === "AM" ? "PM" : "AM" })}
+                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                        ampm[`${currentQ.id}-wd-am`] === "AM"
+                          ? "bg-neon/15 border border-neon text-neon"
+                          : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06]"
+                      }`}
+                    >
+                      {ampm[`${currentQ.id}-wd-am`]}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Weekends & Holidays */}
+                <div>
+                  <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted mb-2 block">
+                    {currentQ.label2}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      onChange={(e) => handleSelect(`we:${e.target.value}`)}
+                      className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
+                    />
+                    <button
+                      onClick={() => setAmpm({ ...ampm, [`${currentQ.id}-we-am`]: ampm[`${currentQ.id}-we-am`] === "AM" ? "PM" : "AM" })}
+                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                        ampm[`${currentQ.id}-we-am`] === "AM"
+                          ? "bg-neon/15 border border-neon text-neon"
+                          : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06]"
+                      }`}
+                    >
+                      {ampm[`${currentQ.id}-we-am`]}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -478,7 +531,7 @@ export default function OnboardingScreen() {
             <p className="text-sm text-muted leading-relaxed">
               {step === 0 && "Every great athlete needs a plan. Let's build yours."}
               {step === 1 && "Your grade level helps us calibrate your schedule."}
-              {step === 2 && "We anchor your day around your wake time."}
+              {step === 2 && "Weekday and weekend schedules? We'll balance both."}
               {step === 3 && "Sleep is non-negotiable. We protect it."}
               {step === 4 && "Practice is fixed. Everything else flexes around it."}
               {step === 5 && "We'll prioritize your hardest subjects when your mind is fresh."}
