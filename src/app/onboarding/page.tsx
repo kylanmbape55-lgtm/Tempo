@@ -337,7 +337,7 @@ export default function OnboardingScreen() {
               <div className="max-w-sm space-y-4">
                 <div>
                   <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-neon mb-2 block">
-                    Your Name
+                    Your Name <span className="text-neon">*</span>
                   </label>
                   <input
                     type="text"
@@ -348,7 +348,7 @@ export default function OnboardingScreen() {
                 </div>
                 <div>
                   <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-neon mb-2 block">
-                    Email Address
+                    Email Address <span className="text-neon">*</span>
                   </label>
                   <input
                     type="email"
@@ -377,11 +377,11 @@ export default function OnboardingScreen() {
               onClick={handleNext}
               disabled={
                 (!answers[currentQ.id] && !(currentQ.type === "multi" && isMultiAnswered()) && !(currentQ.type === "ranking" && ((answers[6] as string[])?.length))) ||
-                (currentQ.type === "name-email" && (!nameEmail.name || !nameEmail.email))
+                (currentQ.type === "name-email" && (!nameEmail.name.trim() || !nameEmail.email.trim()))
               }
               className={`btn-primary px-8 py-4 rounded-full text-sm font-extrabold tracking-wide transition-all ${
                 ((!answers[currentQ.id] && !(currentQ.type === "multi" && isMultiAnswered()) && !(currentQ.type === "ranking" && ((answers[6] as string[])?.length))) ||
-                (currentQ.type === "name-email" && (!nameEmail.name || !nameEmail.email)))
+                (currentQ.type === "name-email" && (!nameEmail.name.trim() || !nameEmail.email.trim())))
                   ? "opacity-40 cursor-not-allowed"
                   : ""
               }`}
