@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 /* ═══════════════════════════════════════════════════════════════════
    TEMPO — Plan Display
    Minute-by-minute daily timeline, color-coded by activity type
+   Uses Hermes sub-agent for AI-powered plan generation
    ═══════════════════════════════════════════════════════════════════ */
 
 type BlockType = "sport" | "study" | "meal" | "personal" | "sleep";
@@ -34,37 +35,30 @@ function getTimezoneGreeting(): { greeting: string; icon: string } {
   return { greeting: "Good night", icon: "🌙" };
 }
 
-function generateDemoPlan(
-  profile: {
-    sport: string;
-    practice: { days: string[]; time: string }[];
-    hardSubjects: string[];
-    wakeTime: string;
-    sleepTime: string;
-    grade: string;
-  },
-  checkIn?: { input: string } | null
-): PlanBlock[] {
+function generateLocalPlan(profile: Record<string, unknown>, checkIn: { input: string } | null): PlanBlock[] {
   const today = new Date();
   const dayName = today.toLocaleDateString("en-US", { weekday: "long" }).slice(0, 3).toLowerCase();
   const isWeekend = dayName === "sat" || dayName === "sun";
 
-  // Find today's practice
+  const sport = (profile.sport as string) || "Sport";
+  const practice = (profile.practice as { days: string[]; time: string }[]) || [];
+  const hardSubjects = (profile.hardSubjects as string[]) || ["Math", "Science"];
+  const wakeTime = ((profile.wakeTime as string)?.replace("wd:", "").replace("we:", "")) || "06:00";
+  const sleepTime = ((profile.sleepTime as string)?.replace("wd:", "").replace("we:", "")) || "22:00";
+
+  const effectiveWake = isWeekend ? ((profile.wakeTime as string)?.replace("we:", "") || "08:00") : wakeTime;
+  const effectiveSleep = isWeekend ? ((profile.sleepTime as string)?.replace("we:", "") || "22:00") : sleepTime;
+
   const dayMap: Record<string, string> = { mon: "mon", tue: "tue", wed: "wed", thu: "thu", fri: "fri", sat: "sat", sun: "sun" };
-  const todayPractice = profile.practice?.find((p) => p.days.some((d) => d.toLowerCase() === dayName));
+  const todayPractice = practice.find((p) => p.days.some((d) => d.toLowerCase() === dayMap[dayName]));
 
-  const wakeTime = profile.wakeTime?.replace("wd:", "").replace("we:", "") || "06:00";
-  const sleepTime = profile.sleepTime?.replace("wd:", "").replace("we:", "") || "22:00";
-  const useWeekendTime = isWeekend;
-  const effectiveWake = useWeekendTime
-    ? profile.sleepTime?.replace("we:", "") || wakeTime
-    : wakeTime;
-  const effectiveSleep = useWeekendTime
-    ? profile.sleepTime?.replace("we:", "") || sleepTime
-    : sleepTime;
+  const checkinInput = checkIn?.input?.toLowerCase() || "";
+  const isTired = checkinInput.includes("tired");
+  const hasTest = checkinInput.includes("test") || checkinInput.includes("exam");
+  const hasGame = checkinInput.includes("game");
+  const notWell = checkinInput.includes("not feeling well") || checkinInput.includes("sick");
 
-  const subjects = profile.hardSubjects?.length ? profile.hardSubjects : ["Math", "Science"];
-  const sportName = profile.sport || "Sport";
+  const subjects = hardSubjects.length ? hardSubjects : ["Math", "Science"];
 
   const blocks: PlanBlock[] = [];
 
@@ -72,100 +66,98 @@ function generateDemoPlan(
   blocks.push({ startTime: effectiveWake, endTime: addMinutes(effectiveWake, 15), label: "Wake up & stretch", type: "personal", icon: "🔵" });
 
   // Morning routine
-  let cursor = addMinutes(effectiveWake, 15);
-  blocks.push({ startTime: effectiveWake, endTime: cursor, label: "Morning routine", type: "personal", icon: "🔵" });
+  const cursor1 = addMinutes(effectiveWake, 15);
+  blocks.push({ startTime: effectiveWake, endTime: cursor1, label: "Morning routine", type: "personal", icon: "🔵" });
 
   // Breakfast
-  cursor = addMinutes(cursor, 30);
-  blocks.push({ startTime: addMinutes(effectiveWake, 15), endTime: cursor, label: "Breakfast", type: "meal", icon: "🍽️" });
+  const breakfastEnd = addMinutes(cursor1, 30);
+  blocks.push({ startTime: cursor1, endTime: breakfastEnd, label: "Breakfast", type: "meal", icon: "🍽️" });
 
-  // Morning study block (hardest subject first)
-  const studyEnd = addMinutes(cursor, 90);
-  blocks.push({ startTime: cursor, endTime: studyEnd, label: `Study: ${subjects[0]}`, type: "study", icon: "📚" });
-  cursor = studyEnd;
+  // Morning study
+  const studyDur = isTired ? 60 : 90;
+  const studyEnd = addMinutes(breakfastEnd, studyDur);
+  blocks.push({ startTime: breakfastEnd, endTime: studyEnd, label: `Study: ${subjects[0]}` + (hasTest ? " (test prep!)" : ""), type: "study", icon: "📚" });
 
   // Break
-  const breakEnd = addMinutes(cursor, 15);
-  blocks.push({ startTime: cursor, endTime: breakEnd, label: "Break", type: "personal", icon: "🔵" });
-  cursor = breakEnd;
+  const breakEnd = addMinutes(studyEnd, 15);
+  blocks.push({ startTime: studyEnd, endTime: breakEnd, label: "Break" + (isTired ? " — rest your mind" : ""), type: "personal", icon: "🔵" });
 
-  // Practice or sport block
+  // Practice / sport
   if (todayPractice?.time) {
-    const pTime = todayPractice.time;
-    const pStart = pTime || addMinutes(cursor, 60);
+    const pStart = todayPractice.time;
     const pEnd = addMinutes(pStart, 120);
-    blocks.push({ startTime: pStart, endTime: pEnd, label: `${sportName} Practice`, type: "sport", icon: "🏃" });
-    cursor = pEnd;
+    blocks.push({ startTime: pStart, endTime: pEnd, label: `${sport} Practice`, type: "sport", icon: "🏃" });
   } else {
-    // Default morning activity
-    const actEnd = addMinutes(cursor, 90);
-    blocks.push({ startTime: cursor, endTime: actEnd, label: `${sportName} Training`, type: "sport", icon: "🏃" });
-    cursor = actEnd;
+    const actEnd = addMinutes(breakEnd, 90);
+    const label = hasGame ? `${sport} Game Day! 🏆` : `${sport} Training`;
+    blocks.push({ startTime: breakEnd, endTime: actEnd, label, type: "sport", icon: "🏃" });
   }
 
   // Shower & lunch
-  const showerEnd = addMinutes(cursor, 30);
-  blocks.push({ startTime: cursor, endTime: showerEnd, label: "Shower & Lunch", type: "meal", icon: "🍽️" });
-  cursor = showerEnd;
+  const lastBlock = blocks[blocks.length - 1];
+  const showerStart = lastBlock.endTime;
+  const showerEnd = addMinutes(showerStart, 30);
+  blocks.push({ startTime: showerStart, endTime: showerEnd, label: "Shower & Lunch", type: "meal", icon: "🍽️" });
 
-  // Second study block
+  // Second study
   if (subjects[1]) {
-    const study2End = addMinutes(cursor, 60);
-    blocks.push({ startTime: cursor, endTime: study2End, label: `Study: ${subjects[1]}`, type: "study", icon: "📚" });
-    cursor = study2End;
+    const s2End = addMinutes(showerEnd, 60);
+    blocks.push({ startTime: showerEnd, endTime: s2End, label: `Study: ${subjects[1]}`, type: "study", icon: "📚" });
+  } else {
+    const freeEnd = addMinutes(showerEnd, 60);
+    blocks.push({ startTime: showerEnd, endTime: freeEnd, label: "Homework / Free time", type: "personal", icon: "🔵" });
   }
 
-  // Free time / homework
-  const freeEnd = addMinutes(cursor, 60);
-  blocks.push({ startTime: cursor, endTime: freeEnd, label: "Homework / Free time", type: "personal", icon: "🔵" });
-  cursor = freeEnd;
+  // Free time
+  const lastEnd2 = blocks[blocks.length - 1].endTime;
+  const freeEnd2 = addMinutes(lastEnd2, 60);
+  blocks.push({ startTime: lastEnd2, endTime: freeEnd2, label: "Free time / Rest", type: "personal", icon: "🔵" });
 
   // Snack
-  blocks.push({ startTime: cursor, endTime: addMinutes(cursor, 15), label: "Snack", type: "meal", icon: "🍽️" });
-  cursor = addMinutes(cursor, 15);
+  const snackEnd = addMinutes(freeEnd2, 15);
+  blocks.push({ startTime: freeEnd2, endTime: snackEnd, label: "Snack", type: "meal", icon: "🍽️" });
 
-  // Afternoon practice or study
-  if (todayPractice?.time && todayPractice.days.length > 0) {
-    const p2End = addMinutes(cursor, 90);
-    blocks.push({ startTime: cursor, endTime: p2End, label: `${sportName} Practice`, type: "sport", icon: "🏃" });
-    cursor = p2End;
-  } else {
-    const study3End = addMinutes(cursor, 60);
-    blocks.push({ startTime: cursor, endTime: study3End, label: `Study: ${subjects[0]}`, type: "study", icon: "📚" });
-    cursor = study3End;
-  }
+  // Afternoon study
+  const s3End = addMinutes(snackEnd, 60);
+  const s3Label = hasTest ? `${subjects[0]} (test prep!)` : `${subjects[0]}`;
+  blocks.push({ startTime: snackEnd, endTime: s3End, label: `Study: ${s3Label}`, type: "study", icon: "📚" });
 
   // Dinner
   const dinnerTime = "18:00";
-  blocks.push({ startTime: cursor, endTime: dinnerTime, label: "Free time", type: "personal", icon: "🔵" });
+  const lastAfternoon = blocks[blocks.length - 1].endTime;
+  if (timeToMinutes(lastAfternoon) < timeToMinutes(dinnerTime)) {
+    blocks.push({ startTime: lastAfternoon, endTime: dinnerTime, label: "Free time / Relax", type: "personal", icon: "🔵" });
+  }
   blocks.push({ startTime: dinnerTime, endTime: addMinutes(dinnerTime, 45), label: "Dinner", type: "meal", icon: "🍽️" });
 
-  // Evening wind down
+  // Evening
   const windDown = addMinutes(dinnerTime, 45);
-  blocks.push({ startTime: windDown, endTime: addMinutes(windDown, 60), label: "Relax / Family time", type: "personal", icon: "🔵" });
+  const windEnd = addMinutes(windDown, 60);
+  blocks.push({ startTime: windDown, endTime: windEnd, label: "Family time / Relax", type: "personal", icon: "🔵" });
 
-  // Study if not too late
-  const studyTime = addMinutes(windDown, 60);
-  if (timeToMinutes(effectiveSleep) - timeToMinutes(studyTime) > 60) {
-    blocks.push({ startTime: studyTime, endTime: addMinutes(studyTime, 45), label: `Study: ${subjects[1] || subjects[0]}`, type: "study", icon: "📚" });
+  // Evening study if time
+  if (timeToMinutes(effectiveSleep) - timeToMinutes(windEnd) > 60) {
+    const eveEnd = addMinutes(windEnd, 45);
+    blocks.push({ startTime: windEnd, endTime: eveEnd, label: `Study: ${subjects[1] || subjects[0]}`, type: "study", icon: "📚" });
+    windEnd && blocks.push({ startTime: eveEnd, endTime: effectiveSleep, label: "Sleep routine" + (isTired || notWell ? " — extra rest!" : ""), type: "sleep", icon: "😴" });
+  } else {
+    blocks.push({ startTime: windEnd, endTime: effectiveSleep, label: "Sleep routine" + (isTired || notWell ? " — extra rest!" : ""), type: "sleep", icon: "😴" });
   }
 
-  // Sleep routine
-  const routineStart = addMinutes(windDown, 120);
-  blocks.push({ startTime: routineStart, endTime: effectiveSleep, label: "Sleep routine", type: "sleep", icon: "😴" });
+  // Lights out
   blocks.push({ startTime: effectiveSleep, endTime: addMinutes(effectiveSleep, 60), label: "Lights out", type: "sleep", icon: "😴" });
 
   return blocks;
 }
 
-function addMinutes(time: string, mins: number): string {
-  const m = timeToMinutes(time) + mins;
-  return `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-}
-
 function timeToMinutes(time: string): number {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
+}
+
+function addMinutes(time: string, mins: number): string {
+  const m = timeToMinutes(time) + mins;
+  return `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
 }
 
 function formatTime(time: string): string {
@@ -177,20 +169,11 @@ function formatTime(time: string): string {
 
 export default function PlanScreen() {
   const router = useRouter();
-  const [profile, setProfile] = useState<{
-    sport: string;
-    practice: { days: string[]; time: string }[];
-    hardSubjects: string[];
-    wakeTime: string;
-    sleepTime: string;
-    grade: string;
-    name: string;
-    email: string;
-    lastCheckIn?: { input: string; date: string; timezone: string };
-  } | null>(null);
+  const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [plan, setPlan] = useState<PlanBlock[]>([]);
   const [fadeIn, setFadeIn] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [planSource, setPlanSource] = useState<"hermes" | "local" | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("tempo_profile");
@@ -201,10 +184,29 @@ export default function PlanScreen() {
     const parsed = JSON.parse(stored);
     setProfile(parsed);
 
-    // Generate plan from profile + last check-in if available
-    const lastCheckIn = parsed.lastCheckIn;
-    setPlan(generateDemoPlan(parsed, lastCheckIn));
+    // Check for today's plan from Hermes cron
+    const today = new Date().toISOString().split("T")[0];
+    const hermesPlanKey = `tempo_plan_${today}`;
+    const hermesPlan = localStorage.getItem(hermesPlanKey);
 
+    if (hermesPlan) {
+      try {
+        const parsedPlan = JSON.parse(hermesPlan);
+        if (parsedPlan.plan && parsedPlan.plan.length > 0) {
+          setPlan(parsedPlan.plan);
+          setPlanSource("hermes");
+          setTimeout(() => setFadeIn(true), 100);
+          return;
+        }
+      } catch {
+        // fall through to local generation
+      }
+    }
+
+    // Generate local plan from profile + check-in
+    const checkInData = parsed.lastCheckIn;
+    setPlan(generateLocalPlan(parsed, checkInData));
+    setPlanSource("local");
     setTimeout(() => setFadeIn(true), 100);
   }, [router]);
 
@@ -213,10 +215,12 @@ export default function PlanScreen() {
     setGenerating(true);
     setFadeIn(false);
     setTimeout(() => {
-      setPlan(generateDemoPlan(profile, profile.lastCheckIn));
+      const checkInData = profile.lastCheckIn as { input: string } | undefined;
+      setPlan(generateLocalPlan(profile, checkInData ?? null));
+      setPlanSource("local");
       setFadeIn(true);
       setGenerating(false);
-    }, 800);
+    }, 600);
   };
 
   if (!profile) {
@@ -242,7 +246,7 @@ export default function PlanScreen() {
           />
         </div>
         <div className="relative max-w-4xl mx-auto px-6 py-8">
-          <div className={`transition-all duration-700 ${fadeIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className={`max-w-3xl transition-all duration-700 ${fadeIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
             <div className="flex items-center gap-3 mb-2">
               <span className="text-2xl">{icon}</span>
               <span className="text-xs font-bold text-muted tracking-wider uppercase">
@@ -250,57 +254,52 @@ export default function PlanScreen() {
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight">
-              {greeting}, {profile.name}
+              {greeting}, {profile.name as string}
             </h1>
             <p className="mt-2 text-sm text-muted">
               Here&apos;s your minute-by-minute plan. Let&apos;s make it count.
             </p>
+            {planSource === "hermes" && (
+              <span className="inline-block mt-2 px-3 py-1 rounded-full text-[10px] font-bold bg-neon/10 text-neon border border-neon/20">
+                ✨ Generated by Hermes AI
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          LEGEND — Activity type color key
+          LEGEND
           ═══════════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-6 pt-6">
         <div className="flex flex-wrap gap-4">
           {Object.entries(BLOCK_STYLES).map(([key, style]) => (
             <div key={key} className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-sm" style={{ background: style.color }} />
-              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
-                {key}
-              </span>
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">{key}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          TIMELINE — Minute-by-minute plan
+          TIMELINE
           ═══════════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className={`transition-all duration-500 ${fadeIn ? "opacity-100" : "opacity-0"} ${generating ? "opacity-50 scale-[0.99]" : ""}`}>
           <div className="relative">
-            {/* Timeline line */}
             <div className="absolute left-[72px] top-0 bottom-0 w-px bg-white/[0.06]" />
 
-            {/* Blocks */}
             {plan.map((block, i) => {
               const style = BLOCK_STYLES[block.type];
               return (
-                <div
-                  key={i}
-                  className="relative flex items-stretch gap-4 group"
-                  style={{ animationDelay: `${i * 30}ms` }}
-                >
-                  {/* Time column */}
+                <div key={i} className="relative flex items-stretch gap-4 group">
                   <div className="w-[72px] shrink-0 pt-3 text-right">
                     <span className="text-xs font-bold text-muted tabular-nums">
                       {formatTime(block.startTime)}
                     </span>
                   </div>
 
-                  {/* Dot on timeline */}
                   <div className="relative flex items-center shrink-0">
                     <div
                       className="w-3 h-3 rounded-full border-2 transition-all duration-200 group-hover:scale-125"
@@ -312,7 +311,6 @@ export default function PlanScreen() {
                     />
                   </div>
 
-                  {/* Block card */}
                   <div
                     className="flex-1 mb-2 rounded-xl border transition-all duration-200 group-hover:translate-x-1"
                     style={{
@@ -323,10 +321,7 @@ export default function PlanScreen() {
                     <div className="px-4 py-3 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="text-base">{style.icon}</span>
-                        <span
-                          className="text-sm font-bold"
-                          style={{ color: style.color }}
-                        >
+                        <span className="text-sm font-bold" style={{ color: style.color }}>
                           {block.label}
                         </span>
                       </div>
@@ -343,7 +338,7 @@ export default function PlanScreen() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          ACTIONS — Check-in again, edit, regenerate
+          ACTIONS
           ═══════════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-6 pb-16">
         <div className="flex flex-wrap gap-3 pt-6 border-t border-white/[0.04]">
@@ -368,10 +363,10 @@ export default function PlanScreen() {
           </button>
         </div>
 
-        {/* AI note */}
+        {/* Hermes integration info */}
         <div className="mt-8 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
           <p className="text-xs text-muted leading-relaxed">
-            <span className="text-neon font-bold">⚡ Demo mode:</span> This plan is generated from your profile data. Connect your OpenAI API key to enable AI-powered adaptive planning based on your daily check-in.
+            <span className="text-neon font-bold">⚡ Hermes AI Mode:</span> A daily cron job generates optimized plans at 7:00 AM. Use &quot;Regenerate&quot; for instant refresh, or check in with new context to adapt your plan.
           </p>
         </div>
       </div>
