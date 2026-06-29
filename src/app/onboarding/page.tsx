@@ -386,7 +386,7 @@ export default function OnboardingScreen() {
                   : ""
               }`}
             >
-              {step === QUESTIONS.length - 1 ? "BUILD MY TEMPO →" : "CONTINUE →"}
+              {step === QUESTIONS.length - 1 ? "COMPLETE SETUP →" : "CONTINUE →"}
             </button>
             {step > 0 && (
               <button
