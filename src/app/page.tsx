@@ -103,19 +103,20 @@ export default function HomePage() {
 
         {/* Main Hero Content */}
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          {/* Heartbeat monitor behind the logo — beating like a real heart */}
+          {/* Heartbeat monitor behind the logo — draws like a real ECG machine */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <svg
-              className="heartbeat-pulse"
               viewBox="0 0 800 200"
               preserveAspectRatio="xMidYMid meet"
-              style={{ width: "90%", height: "220px" }}
+              style={{ width: "85%", height: "200px" }}
             >
               <path
-                d="M0,100 L100,100 L140,100 L160,100 L180,40 L200,160 L220,50 L240,150 L260,100 L300,100 L340,100 L380,100 L420,100 L460,100 L500,100 L540,100 L580,100 L620,100 L660,100 L700,100 L740,100 L780,100 L800,100"
+                d="M0,100 L100,100 L140,100 L155,100 L170,50 L185,150 L200,60 L215,140 L230,100 L260,100 L300,100 L340,100 L380,100 L420,100 L460,100 L500,100 L540,100 L580,100 L620,100 L660,100 L700,100 L740,100 L780,100 L800,100"
                 fill="none"
                 stroke="#39FF14"
                 strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="heartbeat-line"
               />
             </svg>
