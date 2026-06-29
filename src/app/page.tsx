@@ -103,18 +103,18 @@ export default function HomePage() {
 
         {/* Main Hero Content */}
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          {/* Heartbeat monitor behind the logo — draws like a real ECG machine */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          {/* Heartbeat monitor — large, overlays the TEMPO title */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
             <svg
               viewBox="0 0 800 200"
               preserveAspectRatio="xMidYMid meet"
-              style={{ width: "85%", height: "200px" }}
+              style={{ width: "100%", height: "300px" }}
             >
               <path
                 d="M0,100 L100,100 L140,100 L155,100 L170,50 L185,150 L200,60 L215,140 L230,100 L260,100 L300,100 L340,100 L380,100 L420,100 L460,100 L500,100 L540,100 L580,100 L620,100 L660,100 L700,100 L740,100 L780,100 L800,100"
                 fill="none"
                 stroke="#39FF14"
-                strokeWidth="2.5"
+                strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 className="heartbeat-line"
@@ -133,19 +133,19 @@ export default function HomePage() {
           </div>
 
           {/* Main Title — ultra-thick, PlayerAlbum style */}
-          <h1 className="slide-up slide-up-delay-1">
+          <h1 className="slide-up slide-up-delay-1" style={{ position: "relative", zIndex: 2 }}>
             <span className="block text-7xl sm:text-8xl md:text-9xl font-black text-white leading-[0.9] tracking-tight">
               TEMPO
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="slide-up slide-up-delay-2 mt-4 text-lg sm:text-xl font-bold tracking-[0.15em] uppercase text-gray">
+          <p className="slide-up slide-up-delay-2 mt-4 text-lg sm:text-xl font-bold tracking-[0.15em] uppercase text-gray" style={{ position: "relative", zIndex: 2 }}>
             Your AI Coach for Student Athletes
           </p>
 
           {/* Description */}
-          <p className="slide-up slide-up-delay-3 mt-6 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+          <p className="slide-up slide-up-delay-3 mt-6 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed" style={{ position: "relative", zIndex: 2 }}>
             Plan your day in 15 minutes. Balance practice, homework, meals, and sleep —
             with an AI coach that understands what it means to be a student athlete.
           </p>
