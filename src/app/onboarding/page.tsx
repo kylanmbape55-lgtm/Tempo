@@ -208,103 +208,183 @@ export default function OnboardingScreen() {
           />
         </div>
 
-        {/* Coach Vega — Messianic SVG */}
+        {/* Coach Vega — Silver Surfer-inspired messianic figure */}
         <div className="relative z-10 flex flex-col items-center">
-          {/* Halo / Aura */}
+          {/* Radial aura */}
           <div className="relative">
+            {/* Outer glow */}
             <div
-              className="absolute -top-8 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full opacity-20 animate-pulse"
-              style={{
-                background: "radial-gradient(circle, #39FF14 0%, transparent 70%)",
-                filter: "blur(20px)",
-              }}
+              className="absolute -top-16 left-1/2 -translate-x-1/2 w-56 h-56 rounded-full opacity-15 animate-pulse"
+              style={{ background: "radial-gradient(circle, #39FF14 0%, transparent 70%)", filter: "blur(30px)" }}
             />
-            {/* Coach figure */}
-            <svg width="280" height="360" viewBox="0 0 280 360" fill="none" className="relative z-10">
-              {/* Glow circle behind head */}
-              <circle cx="140" cy="100" r="60" fill="url(#haloGradient)" opacity="0.3" />
-              <circle cx="140" cy="100" r="45" fill="url(#haloGradient)" opacity="0.15" />
+            {/* Inner glow */}
+            <div
+              className="absolute -top-8 left-1/2 -translate-x-1/2 w-36 h-36 rounded-full opacity-20"
+              style={{ background: "radial-gradient(circle, #39FF14 0%, transparent 60%)", filter: "blur(15px)" }}
+            />
 
-              {/* Head */}
-              <circle cx="140" cy="100" r="35" fill="#1a1a1e" stroke="#39FF14" strokeWidth="1.5" />
-
-              {/* Eyes — glowing */}
-              <circle cx="128" cy="95" r="4" fill="#39FF14" opacity="0.9" />
-              <circle cx="152" cy="95" r="4" fill="#39FF14" opacity="0.9" />
-
-              {/* Smile */}
-              <path d="M130 110 Q140 118 150 110" stroke="#39FF14" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-
-              {/* Body / Robe */}
+            {/* Silver Surfer SVG */}
+            <svg width="300" height="400" viewBox="0 0 300 400" fill="none" className="relative z-10 float" style={{ filter: "drop-shadow(0 0 20px rgba(57,255,20,0.3))" }}>
+              {/* Surfboard — angled sharply down-right */}
               <path
-                d="M105 135 Q140 125 175 135 L190 280 Q140 300 90 280 Z"
-                fill="url(#robeGradient)"
+                d="M90 340 L240 280 L260 295 L110 355 Z"
+                fill="url(#boardGradient)"
                 stroke="#39FF14"
                 strokeWidth="1"
-                opacity="0.9"
+                opacity="0.8"
+              />
+              {/* Board reflection */}
+              <path
+                d="M100 345 L245 287 L255 292 L108 348 Z"
+                fill="#39FF14"
+                opacity="0.1"
               />
 
-              {/* Inner robe detail */}
+              {/* Body — leaning forward in flight pose */}
+              {/* Torso */}
+              <ellipse cx="150" cy="220" rx="38" ry="55" fill="url(#silverGradient)" />
+
+              {/* Chest definition */}
               <path
-                d="M120 150 Q140 145 160 150 L170 260 Q140 270 110 260 Z"
+                d="M125 195 Q150 185 175 195 L175 235 Q150 245 125 235 Z"
+                fill="url(#chestGradient)"
+                opacity="0.6"
+              />
+              {/* Chest lines */}
+              <path d="M135 200 Q150 195 165 200" stroke="#39FF14" strokeWidth="0.5" fill="none" opacity="0.3" />
+              <path d="M135 215 Q150 210 165 215" stroke="#39FF14" strokeWidth="0.5" fill="none" opacity="0.2" />
+
+              {/* Left arm — extended back for balance */}
+              <path
+                d="M115 200 Q80 180 50 150"
+                stroke="url(#silverGradient)"
+                strokeWidth="14"
+                strokeLinecap="round"
                 fill="none"
+              />
+              {/* Left hand */}
+              <circle cx="50" cy="150" r="8" fill="#1a1a1e" stroke="#39FF14" strokeWidth="1" />
+              <circle cx="50" cy="150" r="3" fill="#39FF14" opacity="0.5" />
+
+              {/* Right arm — stretched forward */}
+              <path
+                d="M185 200 Q220 180 260 160"
+                stroke="url(#silverGradient)"
+                strokeWidth="14"
+                strokeLinecap="round"
+                fill="none"
+              />
+              {/* Right hand */}
+              <circle cx="260" cy="160" r="8" fill="#1a1a1e" stroke="#39FF14" strokeWidth="1" />
+              <circle cx="260" cy="160" r="3" fill="#39FF14" opacity="0.5" />
+
+              {/* Head — looking forward */}
+              <ellipse cx="150" cy="145" rx="28" ry="32" fill="url(#silverGradient)" />
+
+              {/* Facial features — ethereal */}
+              <ellipse cx="140" cy="140" rx="4" ry="3" fill="#39FF14" opacity="0.8" />
+              <ellipse cx="160" cy="140" rx="4" ry="3" fill="#39FF14" opacity="0.8" />
+              <path d="M143 155 Q150 160 157 155" stroke="#39FF14" strokeWidth="1" fill="none" opacity="0.5" />
+
+              {/* Iridescent highlights on body */}
+              <path d="M130 200 Q140 210 150 200" stroke="#06B6D4" strokeWidth="1" fill="none" opacity="0.3" />
+              <path d="M150 210 Q160 220 170 210" stroke="#8B5CF6" strokeWidth="1" fill="none" opacity="0.2" />
+              <path d="M120 230 Q130 240 140 230" stroke="#06B6D4" strokeWidth="0.8" fill="none" opacity="0.15" />
+
+              {/* Legs — in flight pose */}
+              <path
+                d="M140 270 Q130 310 110 340"
+                stroke="url(#silverGradient)"
+                strokeWidth="12"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <path
+                d="M160 270 Q170 310 185 335"
+                stroke="url(#silverGradient)"
+                strokeWidth="12"
+                strokeLinecap="round"
+                fill="none"
+              />
+
+              {/* Feet */}
+              <ellipse cx="110" cy="345" rx="10" ry="5" fill="#1a1a1e" stroke="#39FF14" strokeWidth="0.8" />
+              <ellipse cx="185" cy="340" rx="10" ry="5" fill="#1a1a1e" stroke="#39FF14" strokeWidth="0.8" />
+
+              {/* Flowing energy trails (cosmic surfer vibe) */}
+              <path
+                d="M50 150 Q30 140 15 120"
                 stroke="#39FF14"
-                strokeWidth="0.5"
+                strokeWidth="1.5"
+                fill="none"
                 opacity="0.3"
-              />
-
-              {/* Arms reaching out (welcoming) */}
-              <path
-                d="M105 145 Q70 170 55 200"
-                stroke="#1a1a1e"
-                strokeWidth="12"
                 strokeLinecap="round"
-                fill="none"
               />
               <path
-                d="M175 145 Q210 170 225 200"
-                stroke="#1a1a1e"
-                strokeWidth="12"
-                strokeLinecap="round"
+                d="M260 160 Q280 150 295 130"
+                stroke="#39FF14"
+                strokeWidth="1.5"
                 fill="none"
+                opacity="0.3"
+                strokeLinecap="round"
+              />
+              <path
+                d="M110 345 Q95 355 80 360"
+                stroke="#39FF14"
+                strokeWidth="1"
+                fill="none"
+                opacity="0.2"
+                strokeLinecap="round"
+              />
+              <path
+                d="M185 340 Q195 350 205 355"
+                stroke="#39FF14"
+                strokeWidth="1"
+                fill="none"
+                opacity="0.2"
+                strokeLinecap="round"
               />
 
-              {/* Hands with glow */}
-              <circle cx="55" cy="200" r="8" fill="#1a1a1e" stroke="#39FF14" strokeWidth="1" />
-              <circle cx="225" cy="200" r="8" fill="#1a1a1e" stroke="#39FF14" strokeWidth="1" />
-              <circle cx="55" cy="200" r="3" fill="#39FF14" opacity="0.6" />
-              <circle cx="225" cy="200" r="3" fill="#39FF14" opacity="0.6" />
+              {/* Floating divine particles */}
+              <circle cx="40" cy="100" r="2" fill="#39FF14" opacity="0.5" />
+              <circle cx="270" cy="110" r="1.5" fill="#39FF14" opacity="0.4" />
+              <circle cx="30" cy="200" r="1.5" fill="#06B6D4" opacity="0.3" />
+              <circle cx="280" cy="220" r="2" fill="#8B5CF6" opacity="0.3" />
+              <circle cx="60" cy="300" r="1" fill="#39FF14" opacity="0.4" />
+              <circle cx="250" cy="310" r="1.5" fill="#39FF14" opacity="0.3" />
+              <circle cx="150" cy="80" r="1.5" fill="#FFB800" opacity="0.3" />
+              <circle cx="100" cy="60" r="1" fill="#39FF14" opacity="0.5" />
+              <circle cx="200" cy="65" r="1" fill="#39FF14" opacity="0.4" />
 
-              {/* Floating particles (divine) */}
-              <circle cx="60" cy="80" r="2" fill="#39FF14" opacity="0.4" />
-              <circle cx="220" cy="90" r="1.5" fill="#39FF14" opacity="0.3" />
-              <circle cx="40" cy="150" r="1.5" fill="#FFB800" opacity="0.3" />
-              <circle cx="240" cy="160" r="2" fill="#FFB800" opacity="0.3" />
-              <circle cx="80" cy="260" r="1" fill="#39FF14" opacity="0.4" />
-              <circle cx="200" cy="250" r="1.5" fill="#39FF14" opacity="0.3" />
-
-              {/* Gradients */}
               <defs>
-                <radialGradient id="haloGradient" cx="0.5" cy="0.5" r="0.5">
-                  <stop offset="0%" stopColor="#39FF14" stopOpacity="0.6" />
-                  <stop offset="100%" stopColor="#39FF14" stopOpacity="0" />
-                </radialGradient>
-                <linearGradient id="robeGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1E1E24" />
-                  <stop offset="100%" stopColor="#141416" />
+                <linearGradient id="silverGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#2a2a2e" />
+                  <stop offset="30%" stopColor="#3a3a3e" />
+                  <stop offset="50%" stopColor="#4a4a4e" />
+                  <stop offset="70%" stopColor="#3a3a3e" />
+                  <stop offset="100%" stopColor="#1E1E24" />
+                </linearGradient>
+                <linearGradient id="chestGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#39FF14" stopOpacity="0.08" />
+                  <stop offset="100%" stopColor="#39FF14" stopOpacity="0.02" />
+                </linearGradient>
+                <linearGradient id="boardGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#2a2a2e" />
+                  <stop offset="50%" stopColor="#3a3a3e" />
+                  <stop offset="100%" stopColor="#1E1E24" />
                 </linearGradient>
               </defs>
             </svg>
           </div>
 
           {/* Coach name */}
-          <div className="mt-8 text-center">
+          <div className="mt-6 text-center">
             <h3 className="text-xl font-black text-white tracking-tight">COACH VERA</h3>
             <p className="mt-1 text-xs font-bold tracking-[0.2em] uppercase text-neon">Your AI Guide</p>
           </div>
 
           {/* Dynamic message based on step */}
-          <div className="mt-6 max-w-xs text-center">
+          <div className="mt-5 max-w-xs text-center">
             <p className="text-sm text-muted leading-relaxed">
               {step === 0 && "Every great athlete needs a plan. Let's build yours."}
               {step === 1 && "Your grade level helps us calibrate your schedule."}
