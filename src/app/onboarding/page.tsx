@@ -14,7 +14,8 @@ const QUESTIONS = [
   { id: 4, question: "What time do you go to sleep?", type: "dual-time", label: "Weekdays", label2: "Weekends & Holidays" },
   { id: 5, question: "When is practice?", type: "multi", days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
   { id: 6, question: "What are your hardest subjects? Pick your top 3.", type: "ranking", options: ["Math", "Science", "English", "History", "Foreign Language", "Art", "PE"] },
-  { id: 7, question: "What's your name & email?", type: "name-email" },
+  { id: 7, question: "What's your training goal?", type: "training-goal", options: ["Build Muscle", "Get Faster / Endurance", "Stay Healthy / General", "Recover from Injury"] },
+  { id: 8, question: "What's your name & email?", type: "name-email" },
 ];
 
 const RANK_COLORS = [
@@ -71,6 +72,8 @@ export default function OnboardingScreen() {
   const [fadeIn, setFadeIn] = useState(true);
   const [practiceSlots, setPracticeSlots] = useState<{ days: string[]; time: string }[]>([{ days: [], time: "" }]);
   const [nameEmail, setNameEmail] = useState<{ name: string; email: string }>({ name: "", email: "" });
+  const [trainingGoal, setTrainingGoal] = useState<string>("");
+  const [trainingDays, setTrainingDays] = useState<string[]>([]);
 
   const currentQ = QUESTIONS[step];
   const progress = ((step + 1) / QUESTIONS.length) * 100;
@@ -89,6 +92,8 @@ export default function OnboardingScreen() {
           sleepTime: answers[4],
           practice: practiceSlots,
           hardSubjects: answers[6] || [],
+          trainingGoal: trainingGoal,
+          trainingDays: trainingDays,
           name: nameEmail.name || "",
           email: nameEmail.email || "",
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -333,6 +338,61 @@ export default function OnboardingScreen() {
               </div>
             )}
 
+            {currentQ.type === "training-goal" && (
+              <div className="max-w-lg space-y-6">
+                {/* Goal selection */}
+                <div className="grid grid-cols-1 gap-3">
+                  {currentQ.options?.map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setTrainingGoal(option)}
+                      className={`px-5 py-4 rounded-xl text-left text-sm font-bold transition-all duration-200 flex items-center gap-3 ${
+                        trainingGoal === option
+                          ? "bg-neon/15 border-2 border-neon text-neon"
+                          : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06] hover:border-white/20"
+                      }`}
+                    >
+                      <span className="text-lg">
+                        {option === "Build Muscle" && "💪"}
+                        {option === "Get Faster / Endurance" && "⚡"}
+                        {option === "Stay Healthy / General" && "🧘"}
+                        {option === "Recover from Injury" && "🩹"}
+                      </span>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Training days — only show if a goal is selected and it's not "Stay Healthy" */}
+                {trainingGoal && trainingGoal !== "Stay Healthy / General" && (
+                  <div>
+                    <p className="text-xs text-muted mb-3 font-medium">
+                      What days do you train outside of practice? <span className="text-neon">*</span>
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                        <button
+                          key={day}
+                          onClick={() =>
+                            trainingDays.includes(day)
+                              ? setTrainingDays(trainingDays.filter((d) => d !== day))
+                              : setTrainingDays([...trainingDays, day])
+                          }
+                          className={`px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                            trainingDays.includes(day)
+                              ? "bg-neon/15 border border-neon text-neon"
+                              : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06]"
+                          }`}
+                        >
+                          {day}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {currentQ.type === "name-email" && (
               <div className="max-w-sm space-y-4">
                 <div>
@@ -378,6 +438,8 @@ export default function OnboardingScreen() {
               disabled={
                 (currentQ.type === "name-email")
                   ? (!nameEmail.name.trim() || !nameEmail.email.trim())
+                  : (currentQ.type === "training-goal")
+                    ? (!trainingGoal || (trainingGoal !== "Stay Healthy / General" && trainingDays.length === 0))
                   : (!answers[currentQ.id] &&
                       !(currentQ.type === "multi" && isMultiAnswered()) &&
                       !(currentQ.type === "ranking" && ((answers[6] as string[])?.length)))
@@ -385,6 +447,8 @@ export default function OnboardingScreen() {
               className={`btn-primary px-8 py-4 rounded-full text-sm font-extrabold tracking-wide transition-all ${
                 (currentQ.type === "name-email")
                   ? (!nameEmail.name.trim() || !nameEmail.email.trim())
+                  : (currentQ.type === "training-goal")
+                    ? (!trainingGoal || (trainingGoal !== "Stay Healthy / General" && trainingDays.length === 0))
                   : (!answers[currentQ.id] &&
                       !(currentQ.type === "multi" && isMultiAnswered()) &&
                       !(currentQ.type === "ranking" && ((answers[6] as string[])?.length)))

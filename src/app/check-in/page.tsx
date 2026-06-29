@@ -15,6 +15,18 @@ const QUICK_CHIPS = {
     { label: "🎮 Game today", value: "I have a game today" },
     { label: "📚 Homework due", value: "I have homework due" },
   ],
+  training: [
+    { label: "💪 Lift day", value: "I have a lifting session today" },
+    { label: "🏋️ Leg day", value: "Leg day — hard training" },
+    { label: "🏃 Cardio day", value: "Cardio / conditioning day" },
+    { label: "🧘 Light / recovery", value: "Active recovery day" },
+  ],
+  recovery: [
+    { label: "😴 Poor sleep", value: "I slept poorly last night" },
+    { label: "🦵 Sore body", value: "My body is sore" },
+    { label: "🧊 Ice bath", value: "Ice bath / cold plunge recovery" },
+    { label: "🥤 Post-workout meal", value: "Need post-workout nutrition" },
+  ],
   mood: [
     { label: "😴 Tired", value: "I'm feeling tired" },
     { label: "🤒 Not feeling well", value: "I'm not feeling well" },
@@ -35,7 +47,7 @@ function getTimezoneGreeting(): { greeting: string; icon: string } {
 
 export default function CheckInScreen() {
   const router = useRouter();
-  const [profile, setProfile] = useState<{ name: string; email: string; timezone: string } | null>(null);
+  const [profile, setProfile] = useState<{ name: string; email: string; timezone: string; trainingGoal?: string; trainingDays?: string[] } | null>(null);
   const [text, setText] = useState("");
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -68,10 +80,18 @@ export default function CheckInScreen() {
 
     // Save today's check-in and navigate to plan
     const today = new Date().toISOString().split("T")[0];
+    const trainingChips = selectedChips.filter((c) =>
+      ["I have a lifting session today", "Leg day — hard training", "Cardio / conditioning day", "Active recovery day"].includes(c)
+    );
+    const recoveryChips = selectedChips.filter((c) =>
+      ["I slept poorly last night", "My body is sore", "Ice bath / cold plunge recovery", "Need post-workout nutrition"].includes(c)
+    );
     const checkInData = {
       date: today,
       input: allInputs,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      training: trainingChips,
+      recovery: recoveryChips,
     };
     localStorage.setItem(`tempo_checkin_${today}`, JSON.stringify(checkInData));
 
@@ -119,7 +139,9 @@ export default function CheckInScreen() {
             {greeting}, {profile.name}
           </h1>
           <p className="mt-4 text-base text-muted leading-relaxed">
-            Tell Apex about today. We&apos;ll build your minute-by-minute plan.
+            {profile.trainingGoal
+              ? `${profile.trainingGoal} is your goal. Tell Apex what else is on your plate.`
+              : "Tell Apex about today. We&apos;ll build your minute-by-minute plan."}
           </p>
 
           {/* Text area */}
@@ -147,6 +169,46 @@ export default function CheckInScreen() {
                     className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
                       selectedChips.includes(chip.value)
                         ? "bg-neon/20 border-2 border-neon text-neon shadow-[0_0_12px_rgba(57,255,20,0.15)]"
+                        : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06] hover:border-white/20"
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber mb-2">
+                Training
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_CHIPS.training.map((chip) => (
+                  <button
+                    key={chip.label}
+                    onClick={() => toggleChip(chip.value)}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
+                      selectedChips.includes(chip.value)
+                        ? "bg-amber/20 border-2 border-amber text-amber shadow-[0_0_12px_rgba(255,184,0,0.15)]"
+                        : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06] hover:border-white/20"
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-cyan-400 mb-2">
+                Recovery
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_CHIPS.recovery.map((chip) => (
+                  <button
+                    key={chip.label}
+                    onClick={() => toggleChip(chip.value)}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
+                      selectedChips.includes(chip.value)
+                        ? "bg-cyan-400/20 border-2 border-cyan-400 text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.15)]"
                         : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06] hover:border-white/20"
                     }`}
                   >
@@ -333,7 +395,7 @@ export default function CheckInScreen() {
           </div>
 
           {/* Dynamic speech bubble */}
-          <div className="mt-4 max-w-[220px]">
+          <div className="mt-4 max-w-[240px]">
             <div className="relative rounded-2xl bg-white/[0.04] border border-white/[0.08] px-4 py-3">
               <p className="text-xs text-white/70 leading-relaxed">
                 {text.trim()
@@ -351,7 +413,15 @@ export default function CheckInScreen() {
                     ? "I'll carve out study blocks for that. 📚"
                     : text.toLowerCase().includes("great") || text.toLowerCase().includes("good")
                     ? "Love the energy! Let's channel it. ⚡"
+                    : text.toLowerCase().includes("lift") || text.toLowerCase().includes("leg day") || text.toLowerCase().includes("cardio")
+                    ? "Training day noted. I'll protect your post-workout window. 💪"
+                    : text.toLowerCase().includes("sore") || text.toLowerCase().includes("poor sleep")
+                    ? "Recovery first. I'll add foam roll + extra sleep tonight. 🧊"
                     : "Got it. Building your perfect day... ✨"
+                  : selectedChips.some((c) => ["I have a lifting session today", "Leg day — hard training", "Cardio / conditioning day", "Active recovery day"].includes(c))
+                  ? "Training day — I'll protect your post-workout window. 💪"
+                  : selectedChips.some((c) => ["I slept poorly last night", "My body is sore", "Ice bath / cold plunge recovery", "Need post-workout nutrition"].includes(c))
+                  ? "Recovery noted. Adding foam roll + extra sleep tonight. 🧊"
                   : selectedChips.length > 0
                   ? "Nice, I'm factoring those in! 🎯"
                   : "Tell me about your day — I'll handle the rest. 🌙"}

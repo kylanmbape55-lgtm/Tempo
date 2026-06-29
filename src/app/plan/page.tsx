@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
    Uses Hermes sub-agent for AI-powered plan generation
    ═══════════════════════════════════════════════════════════════════ */
 
-type BlockType = "sport" | "study" | "meal" | "personal" | "sleep";
+type BlockType = "sport" | "study" | "meal" | "personal" | "sleep" | "recovery";
 
 interface PlanBlock {
   startTime: string;
@@ -25,6 +25,7 @@ const BLOCK_STYLES: Record<BlockType, { color: string; bg: string; border: strin
   meal:     { color: "#2ECC71", bg: "rgba(46,204,113,0.06)", border: "rgba(46,204,113,0.2)", icon: "🍽️" },
   personal: { color: "#06B6D4", bg: "rgba(6,182,212,0.06)", border: "rgba(6,182,212,0.2)", icon: "🔵" },
   sleep:    { color: "#8B5CF6", bg: "rgba(139,92,246,0.06)", border: "rgba(139,92,246,0.2)", icon: "😴" },
+  recovery: { color: "#06B6D4", bg: "rgba(6,182,212,0.08)", border: "rgba(6,182,212,0.25)", icon: "🧊" },
 };
 
 function getTimezoneGreeting(): { greeting: string; icon: string } {
@@ -35,7 +36,7 @@ function getTimezoneGreeting(): { greeting: string; icon: string } {
   return { greeting: "Good night", icon: "🌙" };
 }
 
-function generateLocalPlan(profile: Record<string, unknown>, checkIn: { input: string } | null): PlanBlock[] {
+function generateLocalPlan(profile: Record<string, unknown>, checkIn: { input: string; training?: string[]; recovery?: string[] } | null): PlanBlock[] {
   const today = new Date();
   const dayName = today.toLocaleDateString("en-US", { weekday: "long" }).slice(0, 3).toLowerCase();
   const isWeekend = dayName === "sat" || dayName === "sun";
@@ -52,11 +53,13 @@ function generateLocalPlan(profile: Record<string, unknown>, checkIn: { input: s
   const dayMap: Record<string, string> = { mon: "mon", tue: "tue", wed: "wed", thu: "thu", fri: "fri", sat: "sat", sun: "sun" };
   const todayPractice = practice.find((p) => p.days.some((d) => d.toLowerCase() === dayMap[dayName]));
 
-  const checkinInput = checkIn?.input?.toLowerCase() || "";
+  const checkinInput = ((checkIn?.input || "") + " " + (checkIn?.training?.join(" ") || "") + " " + (checkIn?.recovery?.join(" ") || "")).toLowerCase();
   const isTired = checkinInput.includes("tired");
   const hasTest = checkinInput.includes("test") || checkinInput.includes("exam");
   const hasGame = checkinInput.includes("game");
   const notWell = checkinInput.includes("not feeling well") || checkinInput.includes("sick");
+  const isTrainingDay = (checkIn?.training?.length ?? 0) > 0 || checkinInput.includes("lift") || checkinInput.includes("leg day") || checkinInput.includes("cardio");
+  const needsRecovery = (checkIn?.recovery?.length ?? 0) > 0 || checkinInput.includes("sore") || checkinInput.includes("poor sleep") || checkinInput.includes("ice bath");
 
   const subjects = hardSubjects.length ? hardSubjects : ["Math", "Science"];
 
@@ -97,15 +100,25 @@ function generateLocalPlan(profile: Record<string, unknown>, checkIn: { input: s
   const lastBlock = blocks[blocks.length - 1];
   const showerStart = lastBlock.endTime;
   const showerEnd = addMinutes(showerStart, 30);
-  blocks.push({ startTime: showerStart, endTime: showerEnd, label: "Shower & Lunch", type: "meal", icon: "🍽️" });
+  const showerLabel = isTrainingDay ? "Shower & High-Protein Lunch" : "Shower & Lunch";
+  blocks.push({ startTime: showerStart, endTime: showerEnd, label: showerLabel, type: "meal", icon: "🍽️" });
 
-  // Second study
-  if (subjects[1]) {
+  // Recovery block (if training or sore)
+  if (needsRecovery || isTrainingDay) {
+    const recEnd = addMinutes(showerEnd, 20);
+    const recLabel = needsRecovery ? "Foam Roll + Stretch" : "Post-Workout stretch";
+    blocks.push({ startTime: showerEnd, endTime: recEnd, label: recLabel, type: "recovery", icon: "🧊" });
+    // Second study starts after recovery
+    if (subjects[1]) {
+      const s2End = addMinutes(recEnd, 60);
+      blocks.push({ startTime: recEnd, endTime: s2End, label: `Study: ${subjects[1]}`, type: "study", icon: "📚" });
+    } else {
+      const freeEnd = addMinutes(recEnd, 60);
+      blocks.push({ startTime: recEnd, endTime: freeEnd, label: "Homework / Free time", type: "personal", icon: "🔵" });
+    }
+  } else {
     const s2End = addMinutes(showerEnd, 60);
     blocks.push({ startTime: showerEnd, endTime: s2End, label: `Study: ${subjects[1]}`, type: "study", icon: "📚" });
-  } else {
-    const freeEnd = addMinutes(showerEnd, 60);
-    blocks.push({ startTime: showerEnd, endTime: freeEnd, label: "Homework / Free time", type: "personal", icon: "🔵" });
   }
 
   // Free time
@@ -139,9 +152,9 @@ function generateLocalPlan(profile: Record<string, unknown>, checkIn: { input: s
   if (timeToMinutes(effectiveSleep) - timeToMinutes(windEnd) > 60) {
     const eveEnd = addMinutes(windEnd, 45);
     blocks.push({ startTime: windEnd, endTime: eveEnd, label: `Study: ${subjects[1] || subjects[0]}`, type: "study", icon: "📚" });
-    windEnd && blocks.push({ startTime: eveEnd, endTime: effectiveSleep, label: "Sleep routine" + (isTired || notWell ? " — extra rest!" : ""), type: "sleep", icon: "😴" });
+    windEnd && blocks.push({ startTime: eveEnd, endTime: effectiveSleep, label: "Sleep routine" + (isTired || notWell || needsRecovery ? " — extra rest!" : ""), type: "sleep", icon: "😴" });
   } else {
-    blocks.push({ startTime: windEnd, endTime: effectiveSleep, label: "Sleep routine" + (isTired || notWell ? " — extra rest!" : ""), type: "sleep", icon: "😴" });
+    blocks.push({ startTime: windEnd, endTime: effectiveSleep, label: "Sleep routine" + (isTired || notWell || needsRecovery ? " — extra rest!" : ""), type: "sleep", icon: "😴" });
   }
 
   // Lights out
@@ -215,7 +228,7 @@ export default function PlanScreen() {
     setGenerating(true);
     setFadeIn(false);
     setTimeout(() => {
-      const checkInData = profile.lastCheckIn as { input: string } | undefined;
+      const checkInData = profile.lastCheckIn as { input: string; training?: string[]; recovery?: string[] } | undefined;
       setPlan(generateLocalPlan(profile, checkInData ?? null));
       setPlanSource("local");
       setFadeIn(true);
