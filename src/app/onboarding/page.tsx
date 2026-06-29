@@ -14,7 +14,6 @@ const QUESTIONS = [
   { id: 4, question: "What time do you go to sleep?", type: "dual-time", label: "Weekdays", label2: "Weekends & Holidays" },
   { id: 5, question: "When is practice?", type: "multi", days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
   { id: 6, question: "What are your hardest subjects? Pick your top 3.", type: "ranking", options: ["Math", "Science", "English", "History", "Foreign Language", "Art", "PE"] },
-  { id: 7, question: "Any games coming up?", type: "text", placeholder: "e.g., Saturday vs. Lincoln High" },
 ];
 
 const RANK_COLORS = [
@@ -320,7 +319,6 @@ export default function OnboardingScreen() {
               <div className="max-w-lg">
                 <input
                   type="text"
-                  placeholder={currentQ.placeholder}
                   onChange={(e) => handleSelect(e.target.value)}
                   className="w-full px-5 py-4 rounded-xl bg-white/[0.03] border border-white/10 text-white font-bold placeholder:text-muted focus:outline-none focus:border-neon/50 transition-colors"
                 />
@@ -654,7 +652,6 @@ export default function OnboardingScreen() {
               {step === 3 && "Sleep is non-negotiable. We protect it."}
               {step === 4 && "Practice is fixed. Everything else flexes around it."}
               {step === 5 && "We'll prioritize your hardest subjects when your mind is fresh."}
-              {step === 6 && "Game days get special treatment."}
             </p>
           </div>
         </div>
