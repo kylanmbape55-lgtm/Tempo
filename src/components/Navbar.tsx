@@ -7,7 +7,6 @@ const NAV_LINKS = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "All Stars", href: "#all-stars" },
-  { label: "Pricing", href: "#pricing" },
 ];
 
 export default function Navbar() {
