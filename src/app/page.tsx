@@ -103,32 +103,22 @@ export default function HomePage() {
 
         {/* Main Hero Content */}
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          {/* Heartbeat monitor behind the logo — scrolling like a real ECG */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-            <div className="heartbeat-pulse" style={{ width: "200%", height: "200px" }}>
-              <svg
-                viewBox="0 0 1600 200"
-                preserveAspectRatio="none"
-                style={{ width: "100%", height: "100%" }}
-              >
-                {/* First copy of the heartbeat */}
-                <path
-                  d="M0,100 L150,100 L180,100 L200,40 L220,160 L240,60 L260,140 L280,100 L350,100 L380,100 L400,100 L420,100 L440,100 L460,100 L480,100 L500,100 L520,100 L540,100 L560,100 L580,100 L600,100 L620,100 L650,100 L680,100 L700,40 L720,160 L740,60 L760,140 L780,100 L800,100"
-                  fill="none"
-                  stroke="#39FF14"
-                  strokeWidth="2"
-                  className="heartbeat-line"
-                />
-                {/* Second copy — seamless loop */}
-                <path
-                  d="M800,100 L950,100 L980,100 L1000,40 L1020,160 L1040,60 L1060,140 L1080,100 L1150,100 L1180,100 L1200,100 L1220,100 L1240,100 L1260,100 L1280,100 L1300,100 L1320,100 L1340,100 L1360,100 L1380,100 L1400,100 L1420,100 L1450,100 L1480,100 L1500,40 L1520,160 L1540,60 L1560,140 L1580,100 L1600,100"
-                  fill="none"
-                  stroke="#39FF14"
-                  strokeWidth="2"
-                  className="heartbeat-line"
-                />
-              </svg>
-            </div>
+          {/* Heartbeat monitor behind the logo — beating like a real heart */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <svg
+              className="heartbeat-pulse"
+              viewBox="0 0 800 200"
+              preserveAspectRatio="xMidYMid meet"
+              style={{ width: "90%", height: "220px" }}
+            >
+              <path
+                d="M0,100 L100,100 L140,100 L160,100 L180,40 L200,160 L220,50 L240,150 L260,100 L300,100 L340,100 L380,100 L420,100 L460,100 L500,100 L540,100 L580,100 L620,100 L660,100 L700,100 L740,100 L780,100 L800,100"
+                fill="none"
+                stroke="#39FF14"
+                strokeWidth="2.5"
+                className="heartbeat-line"
+              />
+            </svg>
           </div>
 
           {/* Rotating badge — PlayerAlbum "SWAP" style */}

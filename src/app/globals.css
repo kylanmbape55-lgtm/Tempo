@@ -180,13 +180,17 @@ body {
 }
 
 /* ── Heartbeat Monitor ── */
-@keyframes heartbeat-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+@keyframes heartbeat-beat {
+  0% { transform: scale(1); opacity: 0.15; }
+  10% { transform: scale(1.08); opacity: 0.35; }
+  20% { transform: scale(1); opacity: 0.15; }
+  30% { transform: scale(1.05); opacity: 0.25; }
+  40% { transform: scale(1); opacity: 0.15; }
+  100% { transform: scale(1); opacity: 0.15; }
 }
 .heartbeat-pulse {
-  animation: heartbeat-scroll 4s linear infinite;
+  animation: heartbeat-beat 1.2s ease-in-out infinite;
 }
 .heartbeat-line {
-  filter: drop-shadow(0 0 6px rgba(57,255,20,0.5));
+  filter: drop-shadow(0 0 8px rgba(57,255,20,0.6)) drop-shadow(0 0 16px rgba(57,255,20,0.3));
 }
