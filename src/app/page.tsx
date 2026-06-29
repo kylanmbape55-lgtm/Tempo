@@ -103,6 +103,24 @@ export default function HomePage() {
 
         {/* Main Hero Content */}
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+          {/* Heartbeat pulse behind the logo */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+            <svg
+              className="heartbeat-pulse"
+              viewBox="0 0 800 200"
+              preserveAspectRatio="none"
+              style={{ width: "120%", height: "200px", opacity: 0.12 }}
+            >
+              <path
+                d="M0,100 L150,100 L180,100 L200,40 L220,160 L240,60 L260,140 L280,100 L350,100 L380,100 L400,100 L420,100 L440,100 L460,100 L480,100 L500,100 L520,100 L540,100 L560,100 L580,100 L600,100 L620,100 L650,100 L680,100 L700,40 L720,160 L740,60 L760,140 L780,100 L800,100"
+                fill="none"
+                stroke="#39FF14"
+                strokeWidth="2"
+                className="heartbeat-line"
+              />
+            </svg>
+          </div>
+
           {/* Rotating badge — PlayerAlbum "SWAP" style */}
           <div className="inline-flex items-center justify-center mb-8 slide-up">
             <div className="relative w-14 h-14">
