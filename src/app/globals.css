@@ -158,3 +158,23 @@ body {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
+
+/* ── Scrolling Sidebar Text ── */
+@keyframes scroll-up {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-33.33%); }
+}
+@keyframes scroll-down {
+  0% { transform: translateY(-33.33%); }
+  100% { transform: translateY(0); }
+}
+.scroll-text-up {
+  animation: scroll-up 12s linear infinite;
+}
+.scroll-text-down {
+  animation: scroll-down 12s linear infinite;
+}
+.scroll-text-up:hover,
+.scroll-text-down:hover {
+  animation-play-state: paused;
+}

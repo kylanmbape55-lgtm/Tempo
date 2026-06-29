@@ -55,38 +55,50 @@ export default function HomePage() {
           </svg>
         </div>
 
-        {/* Vertical PlayerAlbum-style sidebar text */}
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-6 z-10">
-          {["DAILY PLANS", " SLEEP", " RECOVERY", " STREAKS"].map((text, i) => (
-            <span
-              key={i}
-              className="text-[10px] font-bold tracking-[0.2em] uppercase whitespace-nowrap"
-              style={{
-                writingMode: "vertical-rl",
-                textOrientation: "mixed",
-                color: "var(--text-faded)",
-                letterSpacing: "0.3em",
-              }}
-            >
-              {text}
-            </span>
-          ))}
+        {/* Vertical scrolling sidebar text — PlayerAlbum style */}
+        <div className="absolute left-4 top-0 bottom-0 hidden lg:flex flex-col items-center justify-center gap-8 z-10 overflow-hidden">
+          <div className="scroll-text-up">
+            {[...Array(3)].map((_, setIdx) => (
+              <div key={setIdx} className="flex flex-col items-center gap-8">
+                {["DAILY PLANS", "SLEEP", "RECOVERY", "STREAKS", "FOCUS", "TEMPO"].map((text, i) => (
+                  <span
+                    key={`${setIdx}-${i}`}
+                    className="text-[10px] font-bold tracking-[0.2em] uppercase whitespace-nowrap"
+                    style={{
+                      writingMode: "vertical-rl",
+                      textOrientation: "mixed",
+                      color: "var(--text-faded)",
+                      letterSpacing: "0.3em",
+                    }}
+                  >
+                    {text}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-6 z-10">
-          {["AI POWERED", " 15 MIN", " FREE", " 24/7"].map((text, i) => (
-            <span
-              key={i}
-              className="text-[10px] font-bold tracking-[0.2em] uppercase whitespace-nowrap"
-              style={{
-                writingMode: "vertical-rl",
-                textOrientation: "mixed",
-                color: "var(--text-faded)",
-                letterSpacing: "0.3em",
-              }}
-            >
-              {text}
-            </span>
-          ))}
+        <div className="absolute right-4 top-0 bottom-0 hidden lg:flex flex-col items-center justify-center gap-8 z-10 overflow-hidden">
+          <div className="scroll-text-down">
+            {[...Array(3)].map((_, setIdx) => (
+              <div key={setIdx} className="flex flex-col items-center gap-8">
+                {["AI POWERED", "15 MIN", "FREE", "24/7", "COACH VERA", "STUDENTS"].map((text, i) => (
+                  <span
+                    key={`${setIdx}-${i}`}
+                    className="text-[10px] font-bold tracking-[0.2em] uppercase whitespace-nowrap"
+                    style={{
+                      writingMode: "vertical-rl",
+                      textOrientation: "mixed",
+                      color: "var(--text-faded)",
+                      letterSpacing: "0.3em",
+                    }}
+                  >
+                    {text}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Main Hero Content */}
