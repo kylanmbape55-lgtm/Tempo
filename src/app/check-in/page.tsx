@@ -67,9 +67,14 @@ export default function CheckInScreen() {
     const checkInData = {
       date: today,
       input: allInputs,
-      timezone: profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
     localStorage.setItem(`tempo_checkin_${today}`, JSON.stringify(checkInData));
+
+    // Also save to profile for plan generation
+    const profile = JSON.parse(localStorage.getItem("tempo_profile") || "{}");
+    profile.lastCheckIn = checkInData;
+    localStorage.setItem("tempo_profile", JSON.stringify(profile));
 
     router.push("/plan");
   };
