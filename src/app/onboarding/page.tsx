@@ -13,9 +13,17 @@ const QUESTIONS = [
   { id: 3, question: "What time do you wake up on weekdays?", type: "dual-time", label: "Weekdays", label2: "Weekends & Holidays" },
   { id: 4, question: "What time do you go to sleep?", type: "dual-time", label: "Weekdays", label2: "Weekends & Holidays" },
   { id: 5, question: "When is practice?", type: "multi", days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
-  { id: 6, question: "What's your hardest subject?", type: "select", options: ["Math", "Science", "English", "History", "Foreign Language", "Art", "PE"] },
+  { id: 6, question: "What are your hardest subjects? Pick your top 3.", type: "ranking", options: ["Math", "Science", "English", "History", "Foreign Language", "Art", "PE"] },
   { id: 7, question: "Any games coming up?", type: "text", placeholder: "e.g., Saturday vs. Lincoln High" },
 ];
+
+const RANK_COLORS = [
+  "#FFD700", // Gold — 1st
+  "#C0C0C0", // Silver — 2nd
+  "#CD7F32", // Bronze — 3rd
+];
+
+const RANK_LABELS = ["1st", "2nd", "3rd"];
 
 function TimePicker({ onChange, value }: { onChange: (val: string) => void; value?: string }) {
   const [hour, setHour] = useState(value?.split(":")[0] || "06");
@@ -59,8 +67,9 @@ function TimePicker({ onChange, value }: { onChange: (val: string) => void; valu
 
 export default function OnboardingScreen() {
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
   const [fadeIn, setFadeIn] = useState(true);
+  const [practiceSlots, setPracticeSlots] = useState<{ days: string[]; time: string }[]>([{ days: [], time: "" }]);
 
   const currentQ = QUESTIONS[step];
   const progress = ((step + 1) / QUESTIONS.length) * 100;
@@ -77,6 +86,49 @@ export default function OnboardingScreen() {
 
   const handleSelect = (value: string) => {
     setAnswers({ ...answers, [currentQ.id]: value });
+  };
+
+  const handleRankingSelect = (option: string) => {
+    const current = (answers[6] as string[]) || [];
+    const isSelected = current.includes(option);
+
+    if (isSelected) {
+      // Double-tap to deselect
+      setAnswers({ ...answers, 6: current.filter((s: string) => s !== option) });
+    } else if (current.length < 3) {
+      // Add pick
+      setAnswers({ ...answers, 6: [...current, option] });
+    }
+  };
+
+  const getRank = (option: string): number | null => {
+    const ranking = (answers[6] as string[]) || [];
+    const idx = ranking.indexOf(option);
+    return idx >= 0 ? idx : null;
+  };
+
+  const handlePracticeDayToggle = (slotIndex: number, day: string) => {
+    const updated = [...practiceSlots];
+    const slot = { ...updated[slotIndex] };
+    slot.days = slot.days.includes(day)
+      ? slot.days.filter((d) => d !== day)
+      : [...slot.days, day];
+    updated[slotIndex] = slot;
+    setPracticeSlots(updated);
+  };
+
+  const handlePracticeTimeChange = (slotIndex: number, time: string) => {
+    const updated = [...practiceSlots];
+    updated[slotIndex] = { ...updated[slotIndex], time };
+    setPracticeSlots(updated);
+  };
+
+  const addPracticeSlot = () => {
+    setPracticeSlots([...practiceSlots, { days: [], time: "" }]);
+  };
+
+  const isMultiAnswered = () => {
+    return practiceSlots.some((slot) => slot.days.length > 0 && slot.time);
   };
 
   return (
@@ -177,38 +229,90 @@ export default function OnboardingScreen() {
               </div>
             )}
 
-            {currentQ.type === "time" && (
-              <div className="max-w-xs">
-                <input
-                  type="time"
-                  onChange={(e) => handleSelect(e.target.value)}
-                  className="w-full px-5 py-4 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
-                />
+            {currentQ.type === "multi" && (
+              <div className="max-w-lg space-y-4">
+                {practiceSlots.map((slot, slotIndex) => (
+                  <div
+                    key={slotIndex}
+                    className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-3"
+                  >
+                    {/* Day pills */}
+                    <div className="flex flex-wrap gap-2">
+                      {currentQ.days?.map((day) => (
+                        <button
+                          key={day}
+                          onClick={() => handlePracticeDayToggle(slotIndex, day)}
+                          className={`px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                            slot.days.includes(day)
+                              ? "bg-neon/15 border border-neon text-neon"
+                              : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06]"
+                          }`}
+                        >
+                          {day}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Time picker for this slot */}
+                    <TimePicker
+                      value={slot.time}
+                      onChange={(val) => handlePracticeTimeChange(slotIndex, val)}
+                    />
+                  </div>
+                ))}
+
+                {/* Add Practice button — only show if at least one slot exists */}
+                {practiceSlots.length >= 1 && (
+                  <button
+                    onClick={addPracticeSlot}
+                    className="w-full px-5 py-3.5 rounded-xl border-2 border-dashed border-white/10 text-sm font-bold text-muted hover:border-neon/40 hover:text-neon transition-all duration-200"
+                  >
+                    + Add Practice
+                  </button>
+                )}
               </div>
             )}
 
-            {currentQ.type === "multi" && (
-              <div className="max-w-lg">
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {currentQ.days?.map((day) => (
+            {currentQ.type === "ranking" && (
+              <div className="max-w-lg space-y-3">
+                <p className="text-xs text-muted mb-4">
+                  Tap to rank. Double-tap to remove. Pick up to 3.
+                </p>
+                {currentQ.options?.map((option) => {
+                  const rank = getRank(option);
+                  const isSelected = rank !== null;
+                  return (
                     <button
-                      key={day}
-                      onClick={() => handleSelect(day)}
-                      className={`px-4 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                        answers[currentQ.id]?.includes(day)
-                          ? "bg-neon/15 border border-neon text-neon"
-                          : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06]"
+                      key={option}
+                      onClick={() => handleRankingSelect(option)}
+                      className={`w-full px-5 py-4 rounded-xl text-left transition-all duration-200 flex items-center justify-between ${
+                        isSelected
+                          ? "border-2 bg-white/[0.04]"
+                          : "border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20"
                       }`}
+                      style={isSelected ? { borderColor: RANK_COLORS[rank!] } : {}}
                     >
-                      {day}
+                      <span
+                        className="text-base font-bold"
+                        style={{ color: isSelected ? RANK_COLORS[rank!] : "#FFFFFF" }}
+                      >
+                        {option}
+                      </span>
+                      {isSelected && (
+                        <span
+                          className="text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full"
+                          style={{
+                            color: RANK_COLORS[rank!],
+                            background: `${RANK_COLORS[rank!]}15`,
+                            border: `1px solid ${RANK_COLORS[rank!]}30`,
+                          }}
+                        >
+                          {RANK_LABELS[rank!]}
+                        </span>
+                      )}
                     </button>
-                  ))}
-                </div>
-                <input
-                  type="time"
-                  onChange={(e) => handleSelect(`${answers[currentQ.id] || ""} ${e.target.value}`)}
-                  className="w-full px-5 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white font-bold focus:outline-none focus:border-neon/50 transition-colors"
-                />
+                  );
+                })}
               </div>
             )}
 
@@ -228,9 +332,17 @@ export default function OnboardingScreen() {
           <div className="mt-10 flex items-center gap-4">
             <button
               onClick={handleNext}
-              disabled={!answers[currentQ.id]}
+              disabled={
+                !answers[currentQ.id] &&
+                !(currentQ.type === "multi" && isMultiAnswered()) &&
+                !(currentQ.type === "ranking" && (answers[6] as string[])?.length)
+              }
               className={`btn-primary px-8 py-4 rounded-full text-sm font-extrabold tracking-wide transition-all ${
-                !answers[currentQ.id] ? "opacity-40 cursor-not-allowed" : ""
+                (!answers[currentQ.id] &&
+                  !(currentQ.type === "multi" && isMultiAnswered()) &&
+                  !(currentQ.type === "ranking" && (answers[6] as string[])?.length))
+                  ? "opacity-40 cursor-not-allowed"
+                  : ""
               }`}
             >
               {step === QUESTIONS.length - 1 ? "BUILD MY TEMPO →" : "CONTINUE →"}
@@ -529,7 +641,7 @@ export default function OnboardingScreen() {
 
           {/* Coach name */}
           <div className="mt-4 text-center">
-            <h3 className="text-xl font-black text-white tracking-tight">COACH VERA</h3>
+            <h3 className="text-xl font-black text-white tracking-tight">COACH VEGA</h3>
             <p className="mt-1 text-xs font-bold tracking-[0.2em] uppercase text-neon">Your Cosmic Guide</p>
           </div>
 
