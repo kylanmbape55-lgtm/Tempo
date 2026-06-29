@@ -17,6 +17,46 @@ const QUESTIONS = [
   { id: 7, question: "Any games coming up?", type: "text", placeholder: "e.g., Saturday vs. Lincoln High" },
 ];
 
+function TimePicker({ onChange, value }: { onChange: (val: string) => void; value?: string }) {
+  const [hour, setHour] = useState(value?.split(":")[0] || "06");
+  const [minute, setMinute] = useState(value?.split(":")[1] || "00");
+
+  const handleChange = (h: string, m: string) => {
+    setHour(h);
+    setMinute(m);
+    onChange(`${h}:${m}`);
+  };
+
+  const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+  const minutes = ["00", "15", "30", "45"];
+
+  return (
+    <div className="flex items-center gap-2">
+      {/* Hour */}
+      <select
+        value={hour}
+        onChange={(e) => handleChange(e.target.value, minute)}
+        className="flex-1 px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors appearance-none cursor-pointer"
+      >
+        {hours.map((h) => (
+          <option key={h} value={h} className="bg-charcoal text-white">{h}</option>
+        ))}
+      </select>
+      <span className="text-2xl font-black text-muted">:</span>
+      {/* Minute */}
+      <select
+        value={minute}
+        onChange={(e) => handleChange(hour, e.target.value)}
+        className="flex-1 px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors appearance-none cursor-pointer"
+      >
+        {minutes.map((m) => (
+          <option key={m} value={m} className="bg-charcoal text-white">{m}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 export default function OnboardingScreen() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -124,11 +164,7 @@ export default function OnboardingScreen() {
                   <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-neon mb-2 block">
                     {currentQ.label}
                   </label>
-                  <input
-                    type="time"
-                    onChange={(e) => handleSelect(`wd:${e.target.value}`)}
-                    className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
-                  />
+                  <TimePicker onChange={(val) => handleSelect(`wd:${val}`)} />
                 </div>
 
                 {/* Weekends & Holidays */}
@@ -136,11 +172,7 @@ export default function OnboardingScreen() {
                   <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted mb-2 block">
                     {currentQ.label2}
                   </label>
-                  <input
-                    type="time"
-                    onChange={(e) => handleSelect(`we:${e.target.value}`)}
-                    className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-lg font-bold focus:outline-none focus:border-neon/50 transition-colors"
-                  />
+                  <TimePicker onChange={(val) => handleSelect(`we:${val}`)} />
                 </div>
               </div>
             )}
