@@ -8,16 +8,20 @@ import { useRouter } from "next/navigation";
    Greets user by name, captures today's context, generates plan
    ═══════════════════════════════════════════════════════════════════ */
 
-const QUICK_CHIPS = [
-  { label: "📝 Test today", value: "I have a test today" },
-  { label: "😴 Tired", value: "I'm feeling tired" },
-  { label: "🏃 Practice", value: "I have practice" },
-  { label: "📚 Homework due", value: "I have homework due" },
-  { label: "🎮 Game today", value: "I have a game today" },
-  { label: "🤒 Not feeling well", value: "I'm not feeling well" },
-  { label: "⏰ Early morning", value: "I have to wake up early" },
-  { label: "🎉 Feeling great", value: "I'm feeling great" },
-];
+const QUICK_CHIPS = {
+  events: [
+    { label: "📝 Test today", value: "I have a test today" },
+    { label: "🏃 Practice", value: "I have practice" },
+    { label: "🎮 Game today", value: "I have a game today" },
+    { label: "📚 Homework due", value: "I have homework due" },
+  ],
+  mood: [
+    { label: "😴 Tired", value: "I'm feeling tired" },
+    { label: "🤒 Not feeling well", value: "I'm not feeling well" },
+    { label: "⏰ Early morning", value: "I have to wake up early" },
+    { label: "🎉 Feeling great", value: "I'm feeling great" },
+  ],
+};
 
 function getTimezoneGreeting(): { greeting: string; icon: string } {
   const now = new Date();
@@ -130,29 +134,51 @@ export default function CheckInScreen() {
           </div>
 
           {/* Quick-add chips */}
-          <div className="mt-5">
-            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted mb-3">
-              Quick add
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {QUICK_CHIPS.map((chip) => (
-                <button
-                  key={chip.label}
-                  onClick={() => toggleChip(chip.value)}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
-                    selectedChips.includes(chip.value)
-                      ? "bg-neon/15 border border-neon text-neon"
-                      : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06] hover:border-white/20"
-                  }`}
-                >
-                  {chip.label}
-                </button>
-              ))}
+          <div className="mt-5 space-y-4">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted mb-2">
+                Events
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_CHIPS.events.map((chip) => (
+                  <button
+                    key={chip.label}
+                    onClick={() => toggleChip(chip.value)}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
+                      selectedChips.includes(chip.value)
+                        ? "bg-neon/20 border-2 border-neon text-neon shadow-[0_0_12px_rgba(57,255,20,0.15)]"
+                        : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06] hover:border-white/20"
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted mb-2">
+                How you feel
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_CHIPS.mood.map((chip) => (
+                  <button
+                    key={chip.label}
+                    onClick={() => toggleChip(chip.value)}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
+                      selectedChips.includes(chip.value)
+                        ? "bg-neon/20 border-2 border-neon text-neon shadow-[0_0_12px_rgba(57,255,20,0.15)]"
+                        : "bg-white/[0.03] border border-white/10 text-white hover:bg-white/[0.06] hover:border-white/20"
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Submit CTA */}
-          <div className="mt-10">
+          <div className="mt-8">
             <button
               onClick={handleSubmit}
               disabled={!text.trim() && selectedChips.length === 0}
@@ -304,6 +330,35 @@ export default function CheckInScreen() {
           <div className="mt-4 text-center">
             <h3 className="text-xl font-black text-white tracking-tight">COACH VEGA</h3>
             <p className="mt-1 text-xs font-bold tracking-[0.2em] uppercase text-neon">Your Cosmic Guide</p>
+          </div>
+
+          {/* Dynamic speech bubble */}
+          <div className="mt-4 max-w-[220px]">
+            <div className="relative rounded-2xl bg-white/[0.04] border border-white/[0.08] px-4 py-3">
+              <p className="text-xs text-white/70 leading-relaxed">
+                {text.trim()
+                  ? text.toLowerCase().includes("test") || text.toLowerCase().includes("exam")
+                    ? "Test day — let's make sure you're prepped! 📝"
+                    : text.toLowerCase().includes("game") || text.toLowerCase().includes("match")
+                    ? "Game day! I'll build around your event. 🏆"
+                    : text.toLowerCase().includes("tired") || text.toLowerCase().includes("exhausted")
+                    ? "Rest is part of the plan. I'll keep it balanced. 😴"
+                    : text.toLowerCase().includes("practice") || text.toLowerCase().includes("training")
+                    ? "Practice is locked in. Everything else flexes. 🏃"
+                    : text.toLowerCase().includes("sick") || text.toLowerCase().includes("not feeling well")
+                    ? "Take it easy today. Recovery matters. 🤒"
+                    : text.toLowerCase().includes("homework") || text.toLowerCase().includes("due")
+                    ? "I'll carve out study blocks for that. 📚"
+                    : text.toLowerCase().includes("great") || text.toLowerCase().includes("good")
+                    ? "Love the energy! Let's channel it. ⚡"
+                    : "Got it. Building your perfect day... ✨"
+                  : selectedChips.length > 0
+                  ? "Nice, I'm factoring those in! 🎯"
+                  : "Tell me about your day — I'll handle the rest. 🌙"}
+              </p>
+              {/* Speech bubble arrow */}
+              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-white/[0.04] border-r border-b border-white/[0.08]" />
+            </div>
           </div>
         </div>
 
